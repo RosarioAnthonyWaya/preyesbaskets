@@ -74,4 +74,145 @@
 <script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@latest/bundled/lenis.min.js"></script>
 <script>
     document.addEventListener("DOMContentLoaded", () => { // Initialize Lenis const lenis = new Lenis({ duration: 1.2, smooth: true, direction: "vertical", gestureDirection: "vertical", smoothTouch: true, }); // RAF Loop function raf(time) { lenis.raf(time); requestAnimationFrame(raf); } requestAnimationFrame(raf); // Smooth anchor links (#section) document.addEventListener("click", function(e) { const link = e.target.closest('a[href^="#"]'); if (!link) return; const href = link.getAttribute("href"); if (href === "#" || href === "") return; const id = href.substring(1); const target = document.getElementById(id); if (!target) return; e.preventDefault(); lenis.scrollTo(target, { duration: 1, offset: 0, // change this to -80 if you have a sticky navbar }); history.pushState(null, "", "#" + id); }); // Scroll to hash on page load if (location.hash) { const id = location.hash.replace("#", ""); const el = document.getElementById(id); if (el) { setTimeout(() => { lenis.scrollTo(el, { duration: 1, offset: 0, }); }, 100); } } }); 
-</script> {% endraw %}
+</script>
+<script>
+(function() {
+  const drawer = document.getElementById('cart-drawer');
+  if (!drawer) return;
+
+  const overlay = drawer.querySelector('.cart-overlay');
+  const panel = drawer.querySelector('.cart-panel');
+  const closeBtn = drawer.querySelector('.cart-close');
+  const itemsContainer = drawer.querySelector('.cart-items');
+  const emptyState = drawer.querySelector('.cart-empty-state');
+  const totalAmountEl = drawer.querySelector('.cart-total-amount');
+  const checkoutBtn = drawer.querySelector('.cart-checkout-button');
+
+  // In-memory cart
+  let cart = [];
+
+  function openCart() {
+    drawer.classList.add('is-open');
+  }
+
+  function closeCart() {
+    drawer.classList.remove('is-open');
+  }
+
+  function formatPrice(value) {
+    const num = Number(value) || 0;
+    return '£' + num.toFixed(2);
+  }
+
+  function updateCartUI() {
+    itemsContainer.innerHTML = '';
+
+    if (cart.length === 0) {
+      emptyState.style.display = 'block';
+      totalAmountEl.textContent = '£0.00';
+      return;
+    }
+
+    emptyState.style.display = 'none';
+
+    let total = 0;
+
+    cart.forEach((item, index) => {
+      const li = document.createElement('li');
+      li.className = 'cart-item';
+
+      const lineTotal = item.price * item.quantity;
+      total += lineTotal;
+
+      li.innerHTML = `
+        <div class="cart-item-main">
+          <div class="cart-item-name">${item.name}</div>
+          <div class="cart-item-meta">
+            £${item.price.toFixed(2)} each
+          </div>
+        </div>
+        <div class="cart-item-actions">
+          <div class="cart-item-price">${formatPrice(lineTotal)}</div>
+          <div class="cart-qty-controls">
+            <button class="cart-qty-button" data-action="decrease" data-index="${index}">-</button>
+            <span>${item.quantity}</span>
+            <button class="cart-qty-button" data-action="increase" data-index="${index}">+</button>
+          </div>
+          <button class="cart-remove" data-action="remove" data-index="${index}">Remove</button>
+        </div>
+      `;
+
+      itemsContainer.appendChild(li);
+    });
+
+    totalAmountEl.textContent = formatPrice(total);
+  }
+
+  function addToCart(productId, name, price) {
+    const priceNum = Number(price) || 0;
+
+    const existing = cart.find(item => item.id === productId);
+    if (existing) {
+      existing.quantity += 1;
+    } else {
+      cart.push({
+        id: productId,
+        name: name,
+        price: priceNum,
+        quantity: 1
+      });
+    }
+
+    updateCartUI();
+    openCart();
+  }
+
+  function handleCartClick(e) {
+    const action = e.target.getAttribute('data-action');
+    const index = e.target.getAttribute('data-index');
+    if (action == null || index == null) return;
+
+    const i = Number(index);
+    if (isNaN(i) || !cart[i]) return;
+
+    if (action === 'increase') {
+      cart[i].quantity += 1;
+    } else if (action === 'decrease') {
+      cart[i].quantity -= 1;
+      if (cart[i].quantity <= 0) {
+        cart.splice(i, 1);
+      }
+    } else if (action === 'remove') {
+      cart.splice(i, 1);
+    }
+
+    updateCartUI();
+  }
+
+  // Event listeners
+  overlay.addEventListener('click', closeCart);
+  closeBtn.addEventListener('click', closeCart);
+
+  itemsContainer.addEventListener('click', handleCartClick);
+
+  // Attach to all .cart-button on the page
+  document.addEventListener('click', function(e) {
+    const btn = e.target.closest('.cart-button');
+    if (!btn) return;
+
+    const id = btn.getAttribute('data-product-id');
+    const name = btn.getAttribute('data-name') || 'Item';
+    const price = btn.getAttribute('data-price') || '0';
+
+    addToCart(id, name, price);
+  });
+
+  // Checkout: for now just log cart; later hook to Stripe, form, or WhatsApp
+  checkoutBtn.addEventListener('click', function() {
+    console.log('Cart items:', cart);
+    alert('Checkout logic goes here (Stripe / WhatsApp / email form).');
+  });
+
+})();
+</script>
+{% endraw %}
