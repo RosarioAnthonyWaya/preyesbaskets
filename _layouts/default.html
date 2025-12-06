@@ -11,16 +11,47 @@
   {% include head.html %}
 </head>
 
-<body class="body">
-  <div class="page-wrapper">
+  <body class="body">
+    <div class="page-wrapper">
+      {% include header.html %}
 
-    {% include header.html %}
+      {{ content }}
 
-    {{ content }}
+      <!-- CART DRAWER START -->
+      <div id="cart-drawer" class="cart-drawer">
+        <div class="cart-overlay"></div>
+        <aside class="cart-panel">
+          <header class="cart-header">
+            <h2 class="cart-title">Your gift box</h2>
+            <button class="cart-close" aria-label="Close cart">&times;</button>
+          </header>
 
-    {% include footer.html %}
+          <div class="cart-body">
+            <div class="cart-empty-state">
+              Your box is empty.<br>
+              Start adding gifts to build something special.
+            </div>
+            <ul class="cart-items"></ul>
+          </div>
 
-  </div>
-</body>
+          <footer class="cart-footer">
+            <div class="cart-total-row">
+              <span>Total</span>
+              <span class="cart-total-amount">£0</span>
+            </div>
+
+            <!-- Change this later to Stripe or a form/WhatsApp link -->
+            <button class="cart-checkout-button">
+              Checkout
+            </button>
+          </footer>
+        </aside>
+      </div>
+      <!-- CART DRAWER END -->
+
+      {% include footer.html %}
+    </div>
+  </body>
+
 
 </html>
