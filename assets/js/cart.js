@@ -196,19 +196,53 @@
   }
 
   // Checkout button (for now you can wire this to Stripe checkout / WhatsApp)
-  if (checkoutBtn) {
-    checkoutBtn.addEventListener("click", () => {
-      const { total } = getCartTotals();
-      if (!total) return;
+ const checkoutBtn = document.querySelector(".cart-checkout-button");
 
-      // TODO: replace with real Stripe URL or checkout flow
-      alert(
-        "Checkout clicked. Total: " +
-          formatGBP(total) +
-          "\nNext step: connect this to Stripe."
-      );
-    });
-  }
+if (checkoutBtn) {
+  checkoutBtn.addEventListener("click", async () => {
+    if (!cart.length) {
+      return;
+    }
+
+    // Optional: show a basic loading state
+    checkoutBtn.disabled = true;
+    checkoutBtn.textContent = "Redirecting...";
+
+    try {
+      const response = await fetch("/.netlify/functions/create-checkout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(cart),
+      });
+
+      if (!response.ok) {
+        console.error("Checkout failed", await response.text());
+        checkoutBtn.disabled = false;
+        checkoutBtn.textContent = "Checkout";
+        alert("Something went wrong starting checkout. Please try again.");
+        return;
+      }
+
+      const data = await response.json();
+
+      if (data.url) {
+        window.location.href = data.url; // Go to Stripe Checkout
+      } else {
+        checkoutBtn.disabled = false;
+        checkoutBtn.textContent = "Checkout";
+        alert("Could not get a checkout link. Please try again.");
+      }
+    } catch (err) {
+      console.error(err);
+      checkoutBtn.disabled = false;
+      checkoutBtn.textContent = "Checkout";
+      alert("Network error, please try again.");
+    }
+  });
+}
+
 
   // ---------- Init ----------
   loadCart();
