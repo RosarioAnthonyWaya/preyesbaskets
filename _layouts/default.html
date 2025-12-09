@@ -11,49 +11,51 @@
   {% include head.html %}
 </head>
 
-  <body class="body">
-    <div class="page-wrapper">
-      {% include header.html %}
+<body class="body">
+  <div class="page-wrapper">
+    {% include header.html %}
 
-      {{ content }}
+    {{ content }}
 
-      <!-- CART DRAWER START -->
-      <div id="cart-drawer" class="cart-drawer">
-        <div class="cart-overlay"></div>
-        <aside class="cart-panel">
-          <header class="cart-header">
-            <h2 class="cart-title">Your gift box</h2>
-            <button class="cart-close" aria-label="Close cart">&times;</button>
-          </header>
+    {% include footer.html %}
+  </div>
 
-          <div class="cart-body">
-            <div class="cart-empty-state">
-              Your box is empty.<br>
-              Start adding gifts to build something special.
-            </div>
-            <ul class="cart-items"></ul>
-          </div>
+  <!-- CART DRAWER (ONLY ONE — CORRECT VERSION) -->
+  <div id="cart-drawer" class="cart-drawer">
+    <div class="cart-overlay"></div>
 
-          <footer class="cart-footer">
-            <div class="cart-total-row">
-              <span>Total</span>
-              <span class="cart-total-amount">£0</span>
-            </div>
+    <div class="cart-panel">
+      <button class="cart-close">×</button>
 
-            <!-- Change this later to Stripe or a form/WhatsApp link -->
-            <button class="cart-checkout-button">
-              Checkout
-            </button>
-          </footer>
-        </aside>
+      <h2 class="cart-title">Your Box</h2>
+
+      <div class="cart-empty-state">Your box is empty.</div>
+
+      <ul class="cart-items"></ul>
+
+      <div class="cart-summary">
+        <div class="cart-summary-row cart-summary-row-subtotal">
+          <span>Subtotal:</span>
+          <span class="cart-summary-value">£0.00</span>
+        </div>
+
+        <div class="cart-summary-row cart-summary-row-shipping">
+          <span>Shipping:</span>
+          <span class="cart-summary-value">£0.00</span>
+        </div>
+
+        <div class="cart-summary-row cart-summary-row-total">
+          <strong>Total:</strong>
+          <strong class="cart-summary-value">£0.00</strong>
+        </div>
       </div>
-      <!-- CART DRAWER END -->
 
-      {% include footer.html %}
+      <button class="cart-checkout-button">Checkout</button>
     </div>
-    <script src="{{ '/assets/js/cart.js' | relative_url }}"></script>
+  </div>
 
-  </body>
-
+  <!-- Load cart system LAST -->
+  <script src="{{ '/assets/js/cart.js' | relative_url }}"></script>
+</body>
 
 </html>
