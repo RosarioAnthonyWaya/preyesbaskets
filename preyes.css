@@ -7275,5 +7275,46 @@ a {
     visibility: hidden !important;
 }
 
+.cart-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  height: 100vh;
+  width: 100%;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+.cart-drawer .cart-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  opacity: 0;
+  transition: .3s;
+}
+
+.cart-drawer .cart-panel {
+  position: absolute;
+  top: 0;
+  right: -400px;
+  width: 360px;
+  background: #fff;
+  height: 100%;
+  padding: 20px;
+  transition: .35s ease;
+  overflow-y: auto;
+}
+
+.cart-drawer.is-open {
+  pointer-events: auto;
+}
+
+.cart-drawer.is-open .cart-overlay {
+  opacity: 1;
+}
+
+.cart-drawer.is-open .cart-panel {
+  right: 0;
+}
 
 
