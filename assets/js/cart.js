@@ -1,10 +1,9 @@
-// cart.js – simple client-side cart using localStorage
-
+// assets/js/cart.js
 (function () {
   const STORAGE_KEY = "preyes-cart-v1";
   let cart = [];
 
-  // ---------- Storage helpers ----------
+  // ---------- Storage ----------
   function loadCart() {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
@@ -19,10 +18,10 @@
   }
 
   function formatGBP(amount) {
-    return `£${amount.toFixed(2)}`;
+    return "£" + amount.toFixed(2);
   }
 
-  // ---------- DOM references ----------
+  // ---------- DOM refs ----------
   const drawer = document.getElementById("cart-drawer");
   const overlay = drawer ? drawer.querySelector(".cart-overlay") : null;
   const closeBtn = drawer ? drawer.querySelector(".cart-close") : null;
@@ -43,19 +42,21 @@
     ? drawer.querySelector(".cart-checkout-button")
     : null;
 
-  // Nav/cart icon
+  // Nav icon
   const navCartCountEl = document.getElementById("nav-cart-count");
   const navCartOpenBtn = document.getElementById("cart-open-button");
 
-  // ---------- Derived totals ----------
+  // ---------- Totals ----------
   function getCartTotals() {
-    const subtotal = cart.reduce(
-      (sum, item) => sum + item.price * item.quantity,
-      0
-    );
-    const shipping = cart.length ? 0 : 0; // tweak later if you want shipping
+    const subtotal = cart.reduce(function (sum, item) {
+      return sum + item.price * item.quantity;
+    }, 0);
+
+    const shipping = cart.length ? 0 : 0; // change later if needed
     const total = subtotal + shipping;
-    const itemCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+    const itemCount = cart.reduce(function (sum, item) {
+      return sum + item.quantity;
+    }, 0);
 
     return { subtotal, shipping, total, itemCount };
   }
@@ -63,8 +64,8 @@
   // ---------- Rendering ----------
   function updateNavCartCount() {
     if (!navCartCountEl) return;
-    const { itemCount } = getCartTotals();
-    navCartCountEl.textContent = itemCount;
+    const totals = getCartTotals();
+    navCartCountEl.textContent = totals.itemCount;
   }
 
   function renderCart() {
@@ -79,54 +80,58 @@
       emptyState.style.display = "none";
       itemsList.style.display = "block";
 
-      cart.forEach((item) => {
-        const li = document.createElement("li");
+      cart.forEach(function (item) {
+        var li = document.createElement("li");
         li.className = "cart-item-row";
-        li.innerHTML = `
-          <div class="cart-item-main">
-            <div class="cart-item-info">
-              <div class="cart-item-name">${item.name}</div>
-              <div class="cart-item-meta">
-                <span class="cart-item-qty">x${item.quantity}</span>
-                <span class="cart-item-price">${formatGBP(item.price)}</span>
-              </div>
-            </div>
-          </div>
-          <button
-            type="button"
-            class="cart-item-remove"
-            data-remove-id="${item.id}"
-          >
-            Remove
-          </button>
-        `;
+        li.innerHTML =
+          '<div class="cart-item-main">' +
+            '<div class="cart-item-info">' +
+              '<div class="cart-item-name">' + item.name + "</div>" +
+              '<div class="cart-item-meta">' +
+                '<span class="cart-item-qty">x' + item.quantity + "</span>" +
+                '<span class="cart-item-price">' + formatGBP(item.price) + "</span>" +
+              "</div>" +
+            "</div>" +
+          "</div>" +
+          '<button type="button" class="cart-item-remove" data-remove-id="' + item.id + '">Remove</button>';
+
         itemsList.appendChild(li);
       });
     }
 
-    const { subtotal, shipping, total } = getCartTotals();
-
-    if (subtotalValue) subtotalValue.textContent = formatGBP(subtotal);
-    if (shippingValue) shippingValue.textContent = formatGBP(shipping);
-    if (totalValue) totalValue.textContent = formatGBP(total);
+    var totals = getCartTotals();
+    if (subtotalValue) subtotalValue.textContent = formatGBP(totals.subtotal);
+    if (shippingValue) shippingValue.textContent = formatGBP(totals.shipping);
+    if (totalValue) totalValue.textContent = formatGBP(totals.total);
 
     updateNavCartCount();
   }
 
   // ---------- Cart actions ----------
-  function addToCart({ id, name, price, quantity }) {
-    const existing = cart.find((item) => item.id === id);
+  function addToCart(config) {
+    var id = config.id;
+    var name = config.name;
+    var price = config.price;
+    var quantity = config.quantity;
+
+    var existing = cart.find(function (item) {
+      return item.id === id;
+    });
+
     if (existing) {
       existing.quantity += quantity;
     } else {
-      cart.push({ id, name, price, quantity });
+      cart.push({ id: id, name: name, price: price, quantity: quantity });
     }
+
     saveCart();
     renderCart();
   }
 
   function removeFromCart(id) {
-    cart = cart.filter((item) => item.id !== id);
+    cart = cart.filter(function (item) {
+      return item.id !== id;
+    });
     saveCart();
     renderCart();
   }
@@ -145,49 +150,53 @@
   }
 
   // ---------- Event listeners ----------
-  // Product "Add to box" buttons
-  document.addEventListener("click", (event) => {
-    const btn = event.target.closest(".cart-button");
+
+  // 1. Add-to-cart buttons
+  document.addEventListener("click", function (event) {
+    var btn = event.target.closest(".cart-button");
     if (!btn) return;
 
-    const id = btn.dataset.productId;
-    const name = btn.dataset.name;
-    const price = parseFloat(btn.dataset.price || "0");
+    // Only handle *real* cart buttons with product data
+    var id = btn.dataset.productId;
+    if (!id) return;
 
-    let quantity = 1;
-    const qtyInputId = btn.dataset.quantityInput;
+    var name = btn.dataset.name || "Gift item";
+    var price = parseFloat(btn.dataset.price || "0");
+
+    var quantity = 1;
+    var qtyInputId = btn.dataset.quantityInput;
     if (qtyInputId) {
-      const input = document.getElementById(qtyInputId);
+      var input = document.getElementById(qtyInputId);
       if (input) {
-        const value = parseInt(input.value, 10);
-        if (!Number.isNaN(value) && value > 0) {
+        var value = parseInt(input.value, 10);
+        if (!isNaN(value) && value > 0) {
           quantity = value;
         }
       }
     }
 
-    addToCart({ id, name, price, quantity });
+    addToCart({ id: id, name: name, price: price, quantity: quantity });
     openDrawer();
   });
 
-  // Remove item from cart
+  // 2. Remove item
   if (itemsList) {
-    itemsList.addEventListener("click", (event) => {
-      const btn = event.target.closest(".cart-item-remove");
+    itemsList.addEventListener("click", function (event) {
+      var btn = event.target.closest(".cart-item-remove");
       if (!btn) return;
-      const id = btn.dataset.removeId;
+      var id = btn.dataset.removeId;
       removeFromCart(id);
     });
   }
 
-  // Nav cart open button
+  // 3. Open drawer from nav icon
   if (navCartOpenBtn) {
-    navCartOpenBtn.addEventListener("click", () => {
+    navCartOpenBtn.addEventListener("click", function () {
       openDrawer();
     });
   }
 
-  // Close drawer (overlay or X button)
+  // 4. Close drawer
   if (overlay) {
     overlay.addEventListener("click", closeDrawer);
   }
@@ -195,54 +204,13 @@
     closeBtn.addEventListener("click", closeDrawer);
   }
 
-  // Checkout button (for now you can wire this to Stripe checkout / WhatsApp)
- const checkoutBtn = document.querySelector(".cart-checkout-button");
-
-if (checkoutBtn) {
-  checkoutBtn.addEventListener("click", async () => {
-    if (!cart.length) {
-      return;
-    }
-
-    // Optional: show a basic loading state
-    checkoutBtn.disabled = true;
-    checkoutBtn.textContent = "Redirecting...";
-
-    try {
-      const response = await fetch("/.netlify/functions/create-checkout", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(cart),
-      });
-
-      if (!response.ok) {
-        console.error("Checkout failed", await response.text());
-        checkoutBtn.disabled = false;
-        checkoutBtn.textContent = "Checkout";
-        alert("Something went wrong starting checkout. Please try again.");
-        return;
-      }
-
-      const data = await response.json();
-
-      if (data.url) {
-        window.location.href = data.url; // Go to Stripe Checkout
-      } else {
-        checkoutBtn.disabled = false;
-        checkoutBtn.textContent = "Checkout";
-        alert("Could not get a checkout link. Please try again.");
-      }
-    } catch (err) {
-      console.error(err);
-      checkoutBtn.disabled = false;
-      checkoutBtn.textContent = "Checkout";
-      alert("Network error, please try again.");
-    }
-  });
-}
-
+  // 5. Checkout (stub for now)
+  if (checkoutBtn) {
+    checkoutBtn.addEventListener("click", function () {
+      if (!cart.length) return;
+      alert("Checkout coming soon. For now, screenshot your box and send it to Preye.");
+    });
+  }
 
   // ---------- Init ----------
   loadCart();
