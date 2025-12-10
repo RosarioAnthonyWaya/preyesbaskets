@@ -6447,8 +6447,7 @@ a {
     }
 
     .hero-bottom-count {
-        margin-bottom: 0;
-        font-size: 24px
+       display: none
     }
 
     .hero-bottom-text {
