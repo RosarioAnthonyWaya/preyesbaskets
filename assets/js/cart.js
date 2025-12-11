@@ -217,15 +217,50 @@
   }
 
   // 5) Checkout button – you’ll wire this to Stripe later
+   // 5) Checkout button – call Netlify Function for Stripe Checkout
   if (checkoutBtn) {
-    checkoutBtn.addEventListener("click", () => {
+    checkoutBtn.addEventListener("click", async () => {
       if (!cart.length) return;
-      // TEMP: Just show an alert for now.
-      // Later you’ll replace this with a redirect to Stripe Checkout
-      // or a Netlify Function call.
-      alert("Checkout logic goes here (Stripe / form).");
+
+      // Basic loading state
+      checkoutBtn.disabled = true;
+      checkoutBtn.textContent = "Redirecting...";
+
+      try {
+        const response = await fetch("/.netlify/functions/create-checkout", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(cart),
+        });
+
+        if (!response.ok) {
+          console.error("Checkout failed", await response.text());
+          alert("Checkout error. Please try again.");
+          checkoutBtn.disabled = false;
+          checkoutBtn.textContent = "Checkout";
+          return;
+        }
+
+        const data = await response.json();
+
+        if (data.url) {
+          window.location.href = data.url; // Go to Stripe Checkout
+        } else {
+          alert("Could not get a checkout link. Please try again.");
+          checkoutBtn.disabled = false;
+          checkoutBtn.textContent = "Checkout";
+        }
+      } catch (err) {
+        console.error(err);
+        alert("Network error, please try again.");
+        checkoutBtn.disabled = false;
+        checkoutBtn.textContent = "Checkout";
+      }
     });
   }
+
 
   // ---------------- Init ----------------
   loadCart();
