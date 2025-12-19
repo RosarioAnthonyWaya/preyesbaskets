@@ -1,0 +1,67 @@
+---
+layout: default
+title: "Payment Successful"
+permalink: /success/
+---
+
+<section style="padding: 60px 20px; max-width: 720px; margin: 0 auto;">
+  <h1 id="status-title">Verifying payment…</h1>
+  <p id="status-text">Please wait.</p>
+
+  <div id="actions" style="margin-top: 20px; display: none;">
+    <a href="/" style="text-decoration: underline;">Back to shop</a>
+  </div>
+</section>
+
+<script>
+  (function () {
+    const params = new URLSearchParams(window.location.search);
+    const sessionId = params.get("session_id");
+
+    const titleEl = document.getElementById("status-title");
+    const textEl = document.getElementById("status-text");
+    const actionsEl = document.getElementById("actions");
+
+    if (!sessionId) {
+      titleEl.textContent = "Payment not found ❌";
+      textEl.textContent = "We couldn’t verify your payment because the session ID is missing.";
+      actionsEl.style.display = "block";
+      return;
+    }
+
+    fetch(`/.netlify/functions/verify-session?session_id=${encodeURIComponent(sessionId)}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data && data.paid) {
+          titleEl.textContent = "Payment successful ✅";
+          textEl.textContent = "Thank you — your payment has been confirmed.";
+
+          // ✅ Clear cart after successful payment
+          try {
+            localStorage.removeItem("preyes-cart-v1");
+          } catch (e) {}
+
+          actionsEl.style.display = "block";
+
+          // ✅ OPTIONAL: redirect to Fillout after success
+          // Replace this with your real Fillout link (or your Fillout page permalink)
+          const FILLOUT_LINK = "https://boltzmenn.fillout.com/t/wNLtRvx4TQus";
+
+// ✅ Immediate redirect after confirmed payment
+window.location.href =
+  `${FILLOUT_LINK}?session_id=${encodeURIComponent(sessionId)}`;
+       
+
+        } else {
+          titleEl.textContent = "Payment not confirmed ❌";
+          textEl.textContent = "Your payment has not been confirmed yet. If you were charged, contact support and share your email used at checkout.";
+          actionsEl.style.display = "block";
+        }
+      })
+      .catch(() => {
+        titleEl.textContent = "Verification error ❌";
+        textEl.textContent = "We couldn’t verify payment right now. Please refresh this page in a moment.";
+        actionsEl.style.display = "block";
+      });
+  })();
+</script>
