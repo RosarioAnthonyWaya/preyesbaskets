@@ -1,31 +1,29 @@
+
 // assets/js/cart.js
-// Simple client-side cart using localStorage
+// Simple client-side cart using localStorage + Stripe Checkout via Netlify Function
 
 (function () {
   const STORAGE_KEY = "preyes-cart-v1";
   let cart = [];
 
-  // ---------------- Storage helpers ----------------
+  // ✅ shipping rules (must match backend)
+  const CHEAP_IDS = new Set(["holiday-cheer", "joyful-baskets"]);
+
   function loadCart() {
     try {
       const raw = window.localStorage.getItem(STORAGE_KEY);
       cart = raw ? JSON.parse(raw) : [];
     } catch (e) {
-      console.error("Error loading cart from localStorage", e);
       cart = [];
     }
   }
 
   function saveCart() {
-    try {
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(cart));
-    } catch (e) {
-      console.error("Error saving cart to localStorage", e);
-    }
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(cart));
   }
 
   function formatGBP(amount) {
-    return `£${amount.toFixed(2)}`;
+    return `£${Number(amount || 0).toFixed(2)}`;
   }
 
   // ---------------- DOM references ----------------
@@ -52,38 +50,49 @@
   const navCartCountEl = document.getElementById("nav-cart-count");
   const navCartOpenBtn = document.getElementById("cart-open-button");
 
+  // ---------------- Shipping logic ----------------
+  function shippingPerDelivery(cartItems) {
+    if (!Array.isArray(cartItems) || cartItems.length === 0) return 0;
+
+    const allCheap = cartItems.every((item) =>
+      CHEAP_IDS.has(String(item?.id || "").toLowerCase().trim())
+    );
+
+    return allCheap ? 8 : 11;
+  }
+
   // ---------------- Totals ----------------
-  function getCartTotals() {
+  function getCartTotals(deliveriesCount = 1) {
     const subtotal = cart.reduce(
-      (sum, item) => sum + item.price * item.quantity,
+      (sum, item) => sum + (Number(item.price) || 0) * (Number(item.quantity) || 1),
       0
     );
-    const shipping = cart.length ? 0 : 0; // change later if you charge shipping
-    const total = subtotal + shipping;
-    const itemCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
-    return { subtotal, shipping, total, itemCount };
+    const perDelivery = shippingPerDelivery(cart);
+    const shipping = cart.length ? perDelivery * deliveriesCount : 0;
+    const total = subtotal + shipping;
+
+    const itemCount = cart.reduce((sum, item) => sum + (Number(item.quantity) || 1), 0);
+
+    return { subtotal, shipping, total, itemCount, perDelivery };
   }
 
   // ---------------- Rendering ----------------
   function updateNavCartCount() {
     if (!navCartCountEl) return;
-    const { itemCount } = getCartTotals();
+    const { itemCount } = getCartTotals(1);
     navCartCountEl.textContent = itemCount;
   }
 
   function renderCart() {
     if (!drawer || !itemsList || !emptyState) return;
 
-    // Clear list
     itemsList.innerHTML = "";
 
     if (!cart.length) {
-      // Empty
       emptyState.style.display = "block";
       itemsList.style.display = "none";
     } else {
-      // Has items
       emptyState.style.display = "none";
       itemsList.style.display = "block";
 
@@ -93,18 +102,14 @@
         li.innerHTML = `
           <div class="cart-item-main">
             <div class="cart-item-info">
-              <div class="cart-item-name">${item.name}</div>
+              <div class="cart-item-name">${item.name || "Item"}</div>
               <div class="cart-item-meta">
-                <span class="cart-item-qty">x${item.quantity}</span>
-                <span class="cart-item-price">${formatGBP(item.price)}</span>
+                <span class="cart-item-qty">x${Number(item.quantity) || 1}</span>
+                <span class="cart-item-price">${formatGBP(Number(item.price) || 0)}</span>
               </div>
             </div>
           </div>
-          <button
-            type="button"
-            class="cart-item-remove"
-            data-remove-id="${item.id}"
-          >
+          <button type="button" class="cart-item-remove" data-remove-id="${item.id}">
             Remove
           </button>
         `;
@@ -112,7 +117,8 @@
       });
     }
 
-    const { subtotal, shipping, total } = getCartTotals();
+    // UI totals (assume 1 delivery until checkout asks)
+    const { subtotal, shipping, total } = getCartTotals(1);
 
     if (subtotalValue) subtotalValue.textContent = formatGBP(subtotal);
     if (shippingValue) shippingValue.textContent = formatGBP(shipping);
@@ -123,16 +129,16 @@
 
   // ---------------- Cart actions ----------------
   function addToCart({ id, name, price, quantity }) {
-    if (!id) {
-      console.warn("Missing product id for cart item");
-      return;
-    }
+    if (!id) return;
+
+    const qty = Number(quantity) > 0 ? Number(quantity) : 1;
+    const pr = Number(price) || 0;
 
     const existing = cart.find((item) => item.id === id);
     if (existing) {
-      existing.quantity += quantity;
+      existing.quantity = (Number(existing.quantity) || 1) + qty;
     } else {
-      cart.push({ id, name, price, quantity });
+      cart.push({ id, name, price: pr, quantity: qty });
     }
 
     saveCart();
@@ -160,19 +166,13 @@
 
   // ---------------- Event listeners ----------------
 
-  // 1) Product "Add to cart" / "Add to box" buttons
-  //    Requirements in HTML:
-  //    - class="cart-button"
-  //    - data-product-id="festive-naija-1"
-  //    - data-name="Festive Naija"
-  //    - data-price="77"
-  //    - optional: data-quantity-input="quantity-input-id"
+  // Add-to-cart buttons (works for any page)
   document.addEventListener("click", (event) => {
     const btn = event.target.closest(".cart-button");
     if (!btn) return;
 
     const id = btn.dataset.productId;
-    const name = btn.dataset.name || "Gift box";
+    const name = btn.dataset.name || "Item";
     const price = parseFloat(btn.dataset.price || "0");
 
     let quantity = 1;
@@ -181,9 +181,7 @@
       const input = document.getElementById(qtyInputId);
       if (input) {
         const value = parseInt(input.value, 10);
-        if (!Number.isNaN(value) && value > 0) {
-          quantity = value;
-        }
+        if (!Number.isNaN(value) && value > 0) quantity = value;
       }
     }
 
@@ -191,52 +189,56 @@
     openDrawer();
   });
 
-  // 2) Remove item from cart
+  // Remove buttons
   if (itemsList) {
     itemsList.addEventListener("click", (event) => {
       const btn = event.target.closest(".cart-item-remove");
       if (!btn) return;
-      const id = btn.dataset.removeId;
-      removeFromCart(id);
+      removeFromCart(btn.dataset.removeId);
     });
   }
 
-  // 3) Open cart from header icon
+  // Open cart from header icon
   if (navCartOpenBtn) {
-    navCartOpenBtn.addEventListener("click", () => {
-      openDrawer();
-    });
+    navCartOpenBtn.addEventListener("click", openDrawer);
   }
 
-  // 4) Close drawer (overlay or X button)
-  if (overlay) {
-    overlay.addEventListener("click", closeDrawer);
-  }
-  if (closeBtn) {
-    closeBtn.addEventListener("click", closeDrawer);
-  }
+  // Close cart
+  if (overlay) overlay.addEventListener("click", closeDrawer);
+  if (closeBtn) closeBtn.addEventListener("click", closeDrawer);
 
-  // 5) Checkout button – you’ll wire this to Stripe later
-   // 5) Checkout button – call Netlify Function for Stripe Checkout
+  // ✅ Checkout -> ask delivery count -> call Netlify function -> redirect to Stripe
   if (checkoutBtn) {
     checkoutBtn.addEventListener("click", async () => {
       if (!cart.length) return;
 
-      // Basic loading state
+      const deliveries = Math.max(
+        1,
+        parseInt(prompt("How many delivery addresses? (e.g. 1, 2, 3)"), 10) || 1
+      );
+
+      // Optional: show final totals before redirect
+      const { subtotal, shipping, total, perDelivery } = getCartTotals(deliveries);
+
+      const ok = confirm(
+        `Subtotal: ${formatGBP(subtotal)}\n` +
+          `Shipping: ${formatGBP(shipping)} (${formatGBP(perDelivery)} x ${deliveries})\n` +
+          `Total: ${formatGBP(total)}\n\nProceed to payment?`
+      );
+      if (!ok) return;
+
       checkoutBtn.disabled = true;
       checkoutBtn.textContent = "Redirecting...";
 
       try {
         const response = await fetch("/.netlify/functions/create-checkout", {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(cart),
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ cart, deliveries }), // ✅ IMPORTANT
         });
 
         if (!response.ok) {
-          console.error("Checkout failed", await response.text());
+          console.error("Checkout failed:", await response.text());
           alert("Checkout error. Please try again.");
           checkoutBtn.disabled = false;
           checkoutBtn.textContent = "Checkout";
@@ -244,23 +246,21 @@
         }
 
         const data = await response.json();
-
         if (data.url) {
-          window.location.href = data.url; // Go to Stripe Checkout
+          window.location.href = data.url;
         } else {
-          alert("Could not get a checkout link. Please try again.");
+          alert("Could not get checkout link. Please try again.");
           checkoutBtn.disabled = false;
           checkoutBtn.textContent = "Checkout";
         }
       } catch (err) {
         console.error(err);
-        alert("Network error, please try again.");
+        alert("Network error. Please try again.");
         checkoutBtn.disabled = false;
         checkoutBtn.textContent = "Checkout";
       }
     });
   }
-
 
   // ---------------- Init ----------------
   loadCart();
