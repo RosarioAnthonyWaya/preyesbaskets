@@ -4,6 +4,131 @@
 /* Body text: DM Sans */
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap');
 
+/* =====================================================
+   CUSTOM FONTS – CENTRAL FONT REPO (GitHub Pages)
+   ===================================================== */
+
+/* ---------- RECOLETA ---------- */
+
+@font-face {
+  font-family: "Recoleta";
+  src: url("https://rosarioanthonywaya.github.io/personal-files-fonts/assets/fonts/Recoleta-Thin.woff2") format("woff2");
+  font-weight: 100;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Recoleta";
+  src: url("https://rosarioanthonywaya.github.io/personal-files-fonts/assets/fonts/Recoleta-Light.woff2") format("woff2");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Recoleta";
+  src: url("https://rosarioanthonywaya.github.io/personal-files-fonts/assets/fonts/Recoleta-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Recoleta";
+  src: url("https://rosarioanthonywaya.github.io/personal-files-fonts/assets/fonts/Recoleta-Medium.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Recoleta";
+  src: url("https://rosarioanthonywaya.github.io/personal-files-fonts/assets/fonts/Recoleta-SemiBold.woff2") format("woff2");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Recoleta";
+  src: url("https://rosarioanthonywaya.github.io/personal-files-fonts/assets/fonts/Recoleta-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Recoleta";
+  src: url("https://rosarioanthonywaya.github.io/personal-files-fonts/assets/fonts/Recoleta-Black.woff2") format("woff2");
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ---------- RECOLETA ALT ---------- */
+
+@font-face {
+  font-family: "Recoleta Alt";
+  src: url("https://rosarioanthonywaya.github.io/personal-files-fonts/assets/fonts/Recoleta%20Alt%20Thin.woff2") format("woff2");
+  font-weight: 100;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Recoleta Alt";
+  src: url("https://rosarioanthonywaya.github.io/personal-files-fonts/assets/fonts/Recoleta%20Alt%20Light.woff2") format("woff2");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Recoleta Alt";
+  src: url("https://rosarioanthonywaya.github.io/personal-files-fonts/assets/fonts/Recoleta%20Alt%20Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Recoleta Alt";
+  src: url("https://rosarioanthonywaya.github.io/personal-files-fonts/assets/fonts/Recoleta%20Alt%20Medium.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Recoleta Alt";
+  src: url("https://rosarioanthonywaya.github.io/personal-files-fonts/assets/fonts/Recoleta%20Alt%20SemiBold.woff2") format("woff2");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Recoleta Alt";
+  src: url("https://rosarioanthonywaya.github.io/personal-files-fonts/assets/fonts/Recoleta%20Alt%20Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ---------- RECOLETAALT (NO SPACE) ---------- */
+
+@font-face {
+  font-family: "RecoletaAlt";
+  src: url("https://rosarioanthonywaya.github.io/personal-files-fonts/assets/fonts/RecoletaAlt%20Black.woff2") format("woff2");
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+/* =====================================================
+   END OF CUSTOM FONTS
+   ===================================================== */
+
 
 html {
     -webkit-text-size-adjust: 100%;
@@ -303,7 +428,7 @@ pre.w-code-block code {
 
 
 
-h1,h2,h3,h4,h5,h6 {
+h1,h2,h3,h4,h5,h6,h7 {
     margin-bottom: 10px;
     font-weight: 700
 }
@@ -339,6 +464,13 @@ h5 {
 }
 
 h6 {
+    margin-top: 10px;
+    font-size: 12px;
+    line-height: 18px
+}
+
+
+h7 {
     margin-top: 10px;
     font-size: 12px;
     line-height: 18px
@@ -1999,7 +2131,7 @@ textarea.w-input,textarea.w-select {
 
 :root {
     --light: white;
-    --_font-family---text-font: Poppins,sans-serif;
+    --_font-family---text-font: "DM Sans",sans-serif;
     --text-color: #757575;
     --_font-size---paragraph: 16px;
     --_line-height---xlarge: 160%;
@@ -2015,6 +2147,7 @@ textarea.w-input,textarea.w-select {
     --_font-size---h4: 24px;
     --_font-size---h5: 20px;
     --_font-size---h6: 18px;
+     --_font-size---h7: 14px;
     --_font-family---fa-400: "Fa 400",Arial,sans-serif;
     --_font-size---small-paragraph: 14px;
     --_line-height---xsmall: 100%;
@@ -3212,6 +3345,7 @@ body {
     --_font-size---h4: 24px;
     --_font-size---h5: 20px;
     --_font-size---h6: 18px;
+    --_font-size---h7: 14px;
     --_font-size---small-paragraph: 14px;
     --_font-size---xsmall-paragraph: 12px;
     --_font-size---cta-title: 80px
@@ -3467,12 +3601,12 @@ a {
 }
 
 .header-logo-text {
-    font-family: var(--_font-family---title-font);
+    font-family: 'Recoleta', sans-serif;
     color: var(--dark);
     font-size: 26px;
     line-height: var(--_line-height---xsmall);
     font-weight: var(--_font-weight---bold);
-    text-transform: uppercase;
+    text-transform: none;
     margin-bottom: 0
 }
 
@@ -3537,6 +3671,19 @@ a {
 }
 
 .hero-slide-box {
+    border-radius: 40px;
+    flex-flow: column;
+    flex: none;
+    justify-content: center;
+    align-items: flex-start;
+    width: 100%;
+    min-height: calc(115vh - 166px);
+    display: flex;
+    position: relative;
+    overflow: hidden
+}
+
+.hero-slide-box2 {
     border-radius: 40px;
     flex-flow: column;
     flex: none;
@@ -3852,6 +3999,10 @@ a {
     margin-top: 20px
 }
 
+.approach-grid.three {
+    grid-template-columns: 1fr 1fr 1fr;
+    margin-top: 20px
+}
 .approach-big-block {
     border-radius: 30px;
     flex-flow: column;
@@ -3888,8 +4039,10 @@ a {
 }
 
 .section-title {
-    text-transform: uppercase;
-    margin-bottom: 0
+    text-transform: none;
+    margin-bottom: 0;
+    letter-spacing: -1.8px;
+    line-height: 0.95;
 }
 
 .section-title.deal-sectitle {
@@ -4145,11 +4298,25 @@ a {
     left: 60px
 }
 
+.category-title2 {
+    z-index: 3;
+    pointer-events: none;
+    color: var(--light);
+    font-size: var(--_font-size---h4);
+    line-height: var(--_line-height---xsmall);
+    text-transform: uppercase;
+    margin-bottom: 0;
+    position: absolute;
+    bottom: 60px;
+    left: 60px
+}
+
+
 .category-collection {
     grid-column-gap: 32px;
     grid-row-gap: 32px;
     grid-template-rows: auto;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 0.5fr 0.5fr;
     grid-auto-columns: 1fr;
     display: grid
 }
@@ -4244,6 +4411,13 @@ a {
 .product-text {
     font-size: var(--_font-size---small-paragraph)
 }
+
+
+.product-title {
+    font-family: "Bricolage grotesque", serif;
+}
+
+
 
 .product-price {
     font-family: var(--_font-family---title-font);
@@ -5599,7 +5773,8 @@ a {
 }
 
 .hero-slide-wrapper {
-    display: flex
+    display: block;
+    transform: none !important;
 }
 
 .product-detail-price {
@@ -5644,8 +5819,8 @@ a {
 }
 
 .featured-section {
-    padding-top: 150px;
-    padding-bottom: 150px;
+    padding-top: 200px;
+    padding-bottom: 30px;
     position: relative;
     overflow: hidden
 }
@@ -5654,6 +5829,12 @@ a {
     background-color: var(--transparent);
     height: auto
 }
+
+.featured-slider2 {
+    background-color: var(--transparent);
+    height: 700px
+}
+
 
 .featured-drops-dots {
     display: none
@@ -5681,6 +5862,20 @@ a {
     height: 700px
 }
 
+.featured-image2 {
+    object-fit: cover;
+    width: 100%;
+    height: 600px
+}
+
+
+.valbox-image {
+    object-fit: cover;
+    width: 100%;
+    height: 700px
+}
+
+
 .featured-content-box {
     z-index: 3;
     padding: 30px;
@@ -5691,13 +5886,14 @@ a {
 
 .featured-title {
     color: var(--light);
-    text-transform: uppercase
+    text-transform: none;
+    padding-bottom: 10px;
 }
 
 .featured-text {
     color: var(--light);
     font-size: var(--_font-size---small-paragraph);
-    margin-bottom: 0
+    margin-bottom: 10px;
 }
 
 .slider-icon {
@@ -6127,6 +6323,10 @@ a {
         grid-template-columns: 1fr
     }
 
+    .approach-grid.three {
+        grid-template-columns: 1fr
+    }
+
     .approach-title {
         margin-bottom: 10px
     }
@@ -6176,6 +6376,11 @@ a {
     }
 
     .category-title {
+        bottom: 30px;
+        left: 30px
+    }
+
+    .category-title2 {
         bottom: 30px;
         left: 30px
     }
@@ -6389,17 +6594,33 @@ a {
     }
 
     .featured-section {
-        padding-top: 120px;
-        padding-bottom: 120px
+        padding-top: 55px;
+        padding-bottom: 55px
     }
 
     .featured-slider {
-        padding-bottom: 60px
+        padding-bottom: 60px;
+    }
+
+    .featured-slider2 {
+        height: 600px;
+        padding-bottom: 60px;
+        margin-bottom: 25px;
+        
     }
 
     .featured-image {
         height: 600px
     }
+
+    .featured-image2 {
+        height: 600px
+    }
+
+    .valbox-image {
+        height: 600px
+    }
+
 
     .slider-left-arrow {
         inset: auto auto 0 0
@@ -6434,7 +6655,7 @@ a {
     }
 
     .hero-slide-box {
-        min-height: 75vh
+        min-height: 95vh
     }
 
     .hero-content-box {
@@ -6467,6 +6688,10 @@ a {
         grid-template-rows: 350px 450px
     }
 
+    .approach-grid.two {
+        grid-template-rows: 350px 450px
+    }
+
     .approach-big-block,.approach-block {
         padding: 30px
     }
@@ -6476,6 +6701,11 @@ a {
     }
 
     .category-title {
+        bottom: 20px;
+        left: 20px
+    }
+
+    .category-title2 {
         bottom: 20px;
         left: 20px
     }
@@ -6615,8 +6845,17 @@ a {
         height: 550px
     }
 
+    .featured-image2 {
+        height: 550px
+    }
+
+
+    .valbox-image {
+        height: 550px
+    }
+
     .featured-mask {
-        max-width: 420px
+        max-width: 390px
     }
 
     .chat-box {
@@ -6678,11 +6917,21 @@ a {
     }
 
     .approach-grid {
-        grid-template-rows: 320px 350px
+        grid-template-rows: 320px 350px;
+         grid-column-gap: 80px;
+    grid-row-gap: 80px;
+    padding-bottom: 80px;
+    }
+
+    .approach-grid.two {
+        grid-template-rows: 320px 350px;
+         grid-column-gap: 80px;
+    grid-row-gap: 80px;
     }
 
     .approach-big-block,.approach-block {
-        padding: 20px
+        padding: 20px;
+        height: 120%;
     }
 
     .approach-text {
@@ -6703,6 +6952,8 @@ a {
         grid-row-gap: 24px;
         grid-template-columns: 1fr
     }
+
+    
 
     .subscribe-input-field {
         height: 50px
@@ -6731,6 +6982,11 @@ a {
     }
 
     .category-title {
+        bottom: 30px;
+        left: 30px
+    }
+
+    .category-title2 {
         bottom: 30px;
         left: 30px
     }
@@ -6802,6 +7058,10 @@ a {
         padding-top: 15px;
         padding-bottom: 15px
     }
+
+    .bg.approach-image {
+    height: 120%
+}
 
     .default-state {
         margin-bottom: 24px
@@ -7029,8 +7289,8 @@ a {
     }
 
     .featured-section {
-        padding-top: 100px;
-        padding-bottom: 100px
+        padding-top: 70px;
+        padding-bottom: 40px
     }
 
     .featured-slide {
@@ -7046,12 +7306,24 @@ a {
         height: 400px
     }
 
+    .featured-image2 {
+        height: 500px
+    }
+    
+    
+
+    .valbox-image {
+        height: 550px
+    }
+
+
     .featured-content-box {
         padding: 24px
     }
 
     .featured-mask {
-        max-width: 100%;
+        max-width: 360px;
+        height: 450px;
         padding-left: 0
     }
 
@@ -7322,4 +7594,22 @@ a[href*="webflow.com"] {
   right: 0;
 }
 
+.val-text {
+    font-size:18px; 
+    max-width: 800px; 
+    margin:auto; 
+    text-align: center;
+}
 
+body {
+  font-family: "DM Sans", sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: "Recoleta Alt", serif;
+}
+
+ /* Headings use Bricolage Grotesque 
+h1, h2, h3, h4, h5, h6 {
+  font-family: "Bricolage grotesque", serif;
+}*/
