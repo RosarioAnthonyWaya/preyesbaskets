@@ -4040,7 +4040,9 @@ a {
 
 .section-title {
     text-transform: none;
-    margin-bottom: 0
+    margin-bottom: 0;
+    letter-spacing: -1.8px;
+    line-height: 0.95;
 }
 
 .section-title.deal-sectitle {
@@ -5817,8 +5819,8 @@ a {
 }
 
 .featured-section {
-    padding-top: 150px;
-    padding-bottom: 150px;
+    padding-top: 200px;
+    padding-bottom: 30px;
     position: relative;
     overflow: hidden
 }
@@ -5827,6 +5829,12 @@ a {
     background-color: var(--transparent);
     height: auto
 }
+
+.featured-slider2 {
+    background-color: var(--transparent);
+    height: 700px
+}
+
 
 .featured-drops-dots {
     display: none
@@ -5854,6 +5862,13 @@ a {
     height: 700px
 }
 
+.featured-image2 {
+    object-fit: cover;
+    width: 100%;
+    height: 600px
+}
+
+
 .valbox-image {
     object-fit: cover;
     width: 100%;
@@ -5872,6 +5887,7 @@ a {
 .featured-title {
     color: var(--light);
     text-transform: none;
+    padding-bottom: 10px;
 }
 
 .featured-text {
@@ -6578,15 +6594,26 @@ a {
     }
 
     .featured-section {
-        padding-top: 120px;
-        padding-bottom: 120px
+        padding-top: 55px;
+        padding-bottom: 55px
     }
 
     .featured-slider {
-        padding-bottom: 60px
+        padding-bottom: 60px;
+    }
+
+    .featured-slider2 {
+        height: 600px;
+        padding-bottom: 60px;
+        margin-bottom: 25px;
+        
     }
 
     .featured-image {
+        height: 600px
+    }
+
+    .featured-image2 {
         height: 600px
     }
 
@@ -6658,6 +6685,10 @@ a {
     }
 
     .approach-grid {
+        grid-template-rows: 350px 450px
+    }
+
+    .approach-grid.two {
         grid-template-rows: 350px 450px
     }
 
@@ -6814,12 +6845,17 @@ a {
         height: 550px
     }
 
+    .featured-image2 {
+        height: 550px
+    }
+
+
     .valbox-image {
         height: 550px
     }
 
     .featured-mask {
-        max-width: 420px
+        max-width: 390px
     }
 
     .chat-box {
@@ -6881,11 +6917,21 @@ a {
     }
 
     .approach-grid {
-        grid-template-rows: 320px 350px
+        grid-template-rows: 320px 350px;
+         grid-column-gap: 80px;
+    grid-row-gap: 80px;
+    padding-bottom: 80px;
+    }
+
+    .approach-grid.two {
+        grid-template-rows: 320px 350px;
+         grid-column-gap: 80px;
+    grid-row-gap: 80px;
     }
 
     .approach-big-block,.approach-block {
-        padding: 20px
+        padding: 20px;
+        height: 120%;
     }
 
     .approach-text {
@@ -6906,6 +6952,8 @@ a {
         grid-row-gap: 24px;
         grid-template-columns: 1fr
     }
+
+    
 
     .subscribe-input-field {
         height: 50px
@@ -7010,6 +7058,10 @@ a {
         padding-top: 15px;
         padding-bottom: 15px
     }
+
+    .bg.approach-image {
+    height: 120%
+}
 
     .default-state {
         margin-bottom: 24px
@@ -7237,8 +7289,8 @@ a {
     }
 
     .featured-section {
-        padding-top: 100px;
-        padding-bottom: 100px
+        padding-top: 70px;
+        padding-bottom: 40px
     }
 
     .featured-slide {
@@ -7254,6 +7306,12 @@ a {
         height: 400px
     }
 
+    .featured-image2 {
+        height: 500px
+    }
+    
+    
+
     .valbox-image {
         height: 550px
     }
@@ -7264,7 +7322,8 @@ a {
     }
 
     .featured-mask {
-        max-width: 100%;
+        max-width: 360px;
+        height: 450px;
         padding-left: 0
     }
 
