@@ -1,0 +1,39 @@
+---
+layout: default
+title: "Checkout"
+description: "Review your cart and complete payment."
+---
+
+<section class="section">
+  <div class="container">
+    <h1>Checkout</h1>
+
+    <div id="cart-empty" style="display:none; margin-top: 10px;">
+      Your cart is empty.
+    </div>
+
+    <div id="cart-items" style="margin-top: 16px;"></div>
+
+    <div style="margin-top: 18px;">
+      <label for="deliveries-count">Number of deliveries</label>
+      <input id="deliveries-count" type="number" min="1" value="1" />
+      <p style="opacity:0.8; margin-top:6px;">Shipping is charged per delivery.</p>
+    </div>
+
+    <hr style="margin: 18px 0;" />
+
+    <div>
+      <div>Subtotal: <strong id="cart-subtotal">£0.00</strong></div>
+      <div>Shipping: <strong id="cart-shipping">£0.00</strong></div>
+      <div style="margin-top: 8px;">Total: <strong id="cart-total">£0.00</strong></div>
+    </div>
+
+    <div style="margin-top: 18px;">
+      <button id="checkout-button" class="theme-button">Pay securely</button>
+      <p id="checkout-status" style="margin-top:10px;"></p>
+    </div>
+  </div>
+</section>
+
+<script src="/assets/js/cart.js"></script>
+<script src="/assets/js/checkout.js"></script>
