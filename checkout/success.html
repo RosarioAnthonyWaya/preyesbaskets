@@ -1,0 +1,52 @@
+---
+layout: default
+title: "Payment Status"
+description: "Payment result."
+---
+
+<section class="section">
+  <div class="container">
+    <h1 id="status-title">Checking payment…</h1>
+    <p id="status-text"></p>
+
+    <div style="margin-top: 16px;">
+      <a href="/" class="theme-button">Back to Home</a>
+    </div>
+  </div>
+</section>
+
+<script>
+(async function () {
+  const params = new URLSearchParams(window.location.search);
+  const sessionId = params.get("session_id");
+
+  const title = document.getElementById("status-title");
+  const text = document.getElementById("status-text");
+
+  if (!sessionId) {
+    title.textContent = "Missing session ID";
+    text.textContent = "We couldn’t confirm payment. Please contact support with your name and time of purchase.";
+    return;
+  }
+
+  try {
+    const res = await fetch(`/.netlify/functions/verify-session?session_id=${encodeURIComponent(sessionId)}`);
+    const data = await res.json();
+
+    if (!res.ok) throw new Error(data.error || "Verification failed");
+
+    if (data.payment_status === "paid") {
+      title.textContent = "Payment successful ✅";
+      text.textContent = "Thank you. Your order has been received and we’ll begin processing it.";
+      // Optional: clear cart after success
+      localStorage.removeItem("preyes_cart_v1");
+    } else {
+      title.textContent = "Payment not completed";
+      text.textContent = "Your payment didn’t go through. You can try again from checkout.";
+    }
+  } catch (e) {
+    title.textContent = "Could not verify payment";
+    text.textContent = "If you were charged, contact support with your name and time of purchase.";
+  }
+})();
+</script>
