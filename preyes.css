@@ -7860,3 +7860,16 @@ h1, h2, h3, h4, h5, h6 {
   visibility: visible !important;
   pointer-events: auto !important;
 }
+
+.account-sidebar-overlay{
+  opacity: 0 !important;
+  pointer-events: none !important;
+  visibility: hidden !important;
+}
+
+.account-sidebar-overlay.is-open{
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  visibility: visible !important;
+}
+
