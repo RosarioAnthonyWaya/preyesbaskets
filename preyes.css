@@ -7812,4 +7812,25 @@ h1, h2, h3, h4, h5, h6 {
   transform: translateY(0);
 }
 
+/* --- Emergency: remove any stuck global overlays --- */
+.w-nav-overlay,
+.w-lightbox-backdrop,
+.modal-overlay,
+.popup-overlay,
+.drawer-overlay,
+.cart-overlay,
+.page-overlay,
+.preloader,
+.overlay,
+.backdrop,
+.bg-overlay {
+  opacity: 0 !important;
+  pointer-events: none !important;
+  visibility: hidden !important;
+}
+
+
+/* Hide Webflow nav overlay unless nav is open */
+.w-nav-overlay { display: none; }
+.w-nav[aria-expanded="true"] + .w-nav-overlay { display: block; }
 
