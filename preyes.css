@@ -7842,3 +7842,21 @@ h1, h2, h3, h4, h5, h6 {
 .w-commerce-commercecartcontainerwrapper--cartType-rightSidebar {
   display: none !important;
 }
+
+/* --- FORCE-HIDE THE WEBFLOW CART BACKDROP OVERLAY --- */
+.w-commerce-commercecartcontainerwrapper{
+  display: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+/* If Webflow adds an "open" state class, allow it */
+.w-commerce-commercecartcontainerwrapper.w--open,
+.w-commerce-commercecartcontainerwrapper.is-open,
+.w-commerce-commercecartcontainerwrapper[aria-hidden="false"]{
+  display: flex !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+}
