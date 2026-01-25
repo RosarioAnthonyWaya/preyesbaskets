@@ -2219,7 +2219,7 @@ textarea.w-input,textarea.w-select {
 
 .w-commerce-commercecartcontainerwrapper {
     z-index: 1001;
-    background-color: #000c;
+    background-color: #000;
     position: fixed;
     inset: 0
 }
@@ -4914,7 +4914,7 @@ a {
 
 .account-sidebar-footer-link-text {
     border-bottom: 2px solid var(--dark);
-    color: #000c;
+    color: #0000;
     text-transform: uppercase;
     cursor: pointer;
     margin-bottom: 0;
@@ -7834,3 +7834,11 @@ h1, h2, h3, h4, h5, h6 {
 .w-nav-overlay { display: none; }
 .w-nav[aria-expanded="true"] + .w-nav-overlay { display: block; }
 
+
+/* Kill the always-on Webflow cart overlay */
+.w-commerce-commercecartcontainerwrapper,
+.w-commerce-commercecartcontainerwrapper--cartType-modal,
+.w-commerce-commercecartcontainerwrapper--cartType-leftSidebar,
+.w-commerce-commercecartcontainerwrapper--cartType-rightSidebar {
+  display: none !important;
+}
