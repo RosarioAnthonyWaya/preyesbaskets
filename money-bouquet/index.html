@@ -6,6 +6,7 @@ permalink: /money-bouquet/
 ---
 
 
+
 <style>
   /* Default: desktop + tablet */
   .show-desktop-tablet { display: block; }
@@ -87,159 +88,46 @@ Drop this inside your product page where your “Add to cart” area is.
 Requires the purple-highlight CSS you already asked for earlier.
 ========================= -->
 
-<div class="product-detail-option-group" data-product="money-bouquet">
-  <div class="product-detail-label">Choose a package</div>
+<div class="product-detail-btn-box" id="product-money-bouquet">
 
-  <!-- Package buttons -->
-  <div class="option-grid" role="radiogroup" aria-label="Money Bouquet Packages">
-    <button type="button" class="option-pill" data-option-type="package" data-option-value="Classic Romance (£130)" data-price="130">
-      🌷 Classic Romance — £130
-    </button>
+  <div class="product-detail-option-group">
+    <div class="field-label">Choose package</div>
 
-    <button type="button" class="option-pill" data-option-type="package" data-option-value="Grand Love (£250)" data-price="250">
-      🌹 Grand Love — £250
-    </button>
-
-    <button type="button" class="option-pill" data-option-type="package" data-option-value="Forever Yours (£350)" data-price="350">
-      💐 Forever Yours — £350
-    </button>
-
-    <button type="button" class="option-pill" data-option-type="package" data-option-value="Ultimate Valentine (£500+)" data-price="500">
-      👑 Ultimate Valentine — £500+
-    </button>
+    <div class="option-grid" data-option-group="package">
+      <button type="button" class="option-pill" data-option-value="Classic Romance">£130 – Classic Romance</button>
+      <button type="button" class="option-pill" data-option-value="Grand Love">£250 – Grand Love</button>
+      <button type="button" class="option-pill" data-option-value="Forever Yours">£350 – Forever Yours</button>
+      <button type="button" class="option-pill" data-option-value="Ultimate Valentine">£500 – Ultimate Valentine</button>
+    </div>
   </div>
 
-  <!-- Extra option (only relevant to Ultimate Valentine, but safe to show always) -->
-  <div class="product-detail-label" style="margin-top:14px;">Champagne option</div>
-  <div class="option-grid" role="radiogroup" aria-label="Champagne option">
-    <button type="button" class="option-pill" data-option-type="champagne" data-option-value="Non-alcoholic">
-      Non-alcoholic
-    </button>
-    <button type="button" class="option-pill" data-option-type="champagne" data-option-value="Alcoholic">
-      Alcoholic
-    </button>
+  <div class="product-detail-option-group">
+    <div class="field-label">Card message (optional)</div>
+    <textarea name="card_message" rows="3" placeholder="Write your message…"></textarea>
   </div>
 
-  <!-- Notes/message -->
-  <div class="product-detail-label" style="margin-top:14px;">Personalised message (optional)</div>
-  <textarea class="product-detail-textarea" rows="3" placeholder="Write the card message here..." data-option-type="message"></textarea>
-
-  <!-- Add to cart -->
-  <div style="margin-top:16px;">
-    <button
-      type="button"
-      class="theme-button dark w-inline-block"
-      id="addMoneyBouquetToCart"
-      data-product-id="money-bouquet"
-      data-product-name="Money Bouquet"
-      data-product-url="/money-bouquet"
-      data-product-image="https://i.ibb.co/S76Xt5Z1/Whats-App-Image-2025-11-16-at-11-01-32-a967f556.jpg"
-    >
-      <div class="theme-btn-bg light" style="width:40px;"></div>
-      <div class="theme-btn-text-box">
-        <div class="theme-btn-text">Add to cart</div>
-        <div class="theme-btn-hover-text">Add to cart</div>
-      </div>
-    </button>
+  <div class="price-row">
+    <span>Total:</span>
+    <strong id="money-bouquet-price">£0.00</strong>
   </div>
 
-  <p class="product-detail-hint" style="margin-top:10px;">
-    Note: “Ultimate Valentine” includes free delivery & setup.
-  </p>
+  <button
+    type="button"
+    class="cart-button"
+    data-product-id="money-bouquet"
+    data-name="Money Bouquet"
+    data-price="0"
+    data-options-scope="#product-money-bouquet"
+    data-price-mode="lookup"
+    data-price-option="package"
+    data-price-map='{"Classic Romance":130,"Grand Love":250,"Forever Yours":350,"Ultimate Valentine":500}'
+    data-price-display="#money-bouquet-price"
+  >
+    Add to Cart
+  </button>
+
 </div>
 
-<script>
-/* =========================
-Option button selection (purple highlight)
-Stores selections for Money Bouquet and adds to localStorage cart
-========================= */
-
-(function () {
-  const root = document.querySelector('.product-detail-option-group[data-product="money-bouquet"]');
-  if (!root) return;
-
-  const cartKey = "preyes_cart_v1";
-
-  // Click-to-select for option-pill groups
-  root.addEventListener("click", (e) => {
-    const btn = e.target.closest(".option-pill");
-    if (!btn) return;
-
-    const type = btn.getAttribute("data-option-type");
-    if (!type) return;
-
-    // Make each option type behave like radio: only one selected per type
-    const siblings = root.querySelectorAll(`.option-pill[data-option-type="${type}"]`);
-    siblings.forEach(b => b.classList.remove("is-selected"));
-    btn.classList.add("is-selected");
-  });
-
-  function getSelectedValue(type) {
-    const selected = root.querySelector(`.option-pill[data-option-type="${type}"].is-selected`);
-    return selected ? selected.getAttribute("data-option-value") : "";
-  }
-
-  function getSelectedPrice() {
-    const selected = root.querySelector(`.option-pill[data-option-type="package"].is-selected`);
-    if (!selected) return 0;
-    const p = parseFloat(selected.getAttribute("data-price") || "0");
-    return Number.isFinite(p) ? p : 0;
-  }
-
-  function getMessage() {
-    const ta = root.querySelector(`textarea[data-option-type="message"]`);
-    return ta ? ta.value.trim() : "";
-  }
-
-  function readCart() {
-    try {
-      return JSON.parse(localStorage.getItem(cartKey) || "[]");
-    } catch {
-      return [];
-    }
-  }
-
-  function writeCart(cart) {
-    localStorage.setItem(cartKey, JSON.stringify(cart));
-  }
-
-  document.getElementById("addMoneyBouquetToCart")?.addEventListener("click", () => {
-    const packageName = getSelectedValue("package");
-    const price = getSelectedPrice();
-
-    if (!packageName) {
-      alert("Please choose a Money Bouquet package.");
-      return;
-    }
-
-    const champagne = getSelectedValue("champagne"); // optional
-    const message = getMessage(); // optional
-
-    const item = {
-      id: "money-bouquet",
-      name: "Money Bouquet",
-      qty: 1,
-      unitPrice: price,
-      image: "https://i.ibb.co/S76Xt5Z1/Whats-App-Image-2025-11-16-at-11-01-32-a967f556.jpg",
-      url: "/money-bouquet",
-      options: {
-        package: packageName,
-        champagne: champagne || "Not selected",
-        message: message || ""
-      }
-    };
-
-    const cart = readCart();
-    cart.push(item);
-    writeCart(cart);
-
-    // If you want: redirect to your Fillout pre-checkout page
-    // window.location.href = "/pre-checkout";
-
-    alert("Added to cart.");
-  });
-})();
-</script>
 
 
 
@@ -298,159 +186,45 @@ Drop this inside your product page where your “Add to cart” area is.
 Requires the purple-highlight CSS you already asked for earlier.
 ========================= -->
 
-<div class="product-detail-option-group" data-product="money-bouquet">
-  <div class="product-detail-label">Choose a package</div>
+<div class="product-detail-btn-box" id="product-money-bouquet">
 
-  <!-- Package buttons -->
-  <div class="option-grid" role="radiogroup" aria-label="Money Bouquet Packages">
-    <button type="button" class="option-pill" data-option-type="package" data-option-value="Classic Romance (£130)" data-price="130">
-      🌷 Classic Romance — £130
-    </button>
+  <div class="product-detail-option-group">
+    <div class="field-label">Choose package</div>
 
-    <button type="button" class="option-pill" data-option-type="package" data-option-value="Grand Love (£250)" data-price="250">
-      🌹 Grand Love — £250
-    </button>
-
-    <button type="button" class="option-pill" data-option-type="package" data-option-value="Forever Yours (£350)" data-price="350">
-      💐 Forever Yours — £350
-    </button>
-
-    <button type="button" class="option-pill" data-option-type="package" data-option-value="Ultimate Valentine (£500+)" data-price="500">
-      👑 Ultimate Valentine — £500+
-    </button>
+    <div class="option-grid" data-option-group="package">
+      <button type="button" class="option-pill" data-option-value="Classic Romance">£130 – Classic Romance</button>
+      <button type="button" class="option-pill" data-option-value="Grand Love">£250 – Grand Love</button>
+      <button type="button" class="option-pill" data-option-value="Forever Yours">£350 – Forever Yours</button>
+      <button type="button" class="option-pill" data-option-value="Ultimate Valentine">£500 – Ultimate Valentine</button>
+    </div>
   </div>
 
-  <!-- Extra option (only relevant to Ultimate Valentine, but safe to show always) -->
-  <div class="product-detail-label" style="margin-top:14px;">Champagne option</div>
-  <div class="option-grid" role="radiogroup" aria-label="Champagne option">
-    <button type="button" class="option-pill" data-option-type="champagne" data-option-value="Non-alcoholic">
-      Non-alcoholic
-    </button>
-    <button type="button" class="option-pill" data-option-type="champagne" data-option-value="Alcoholic">
-      Alcoholic
-    </button>
+  <div class="product-detail-option-group">
+    <div class="field-label">Card message (optional)</div>
+    <textarea name="card_message" rows="3" placeholder="Write your message…"></textarea>
   </div>
 
-  <!-- Notes/message -->
-  <div class="product-detail-label" style="margin-top:14px;">Personalised message (optional)</div>
-  <textarea class="product-detail-textarea" rows="3" placeholder="Write the card message here..." data-option-type="message"></textarea>
-
-  <!-- Add to cart -->
-  <div style="margin-top:16px;">
-    <button
-      type="button"
-      class="theme-button dark w-inline-block"
-      id="addMoneyBouquetToCart"
-      data-product-id="money-bouquet"
-      data-product-name="Money Bouquet"
-      data-product-url="/money-bouquet"
-      data-product-image="https://i.ibb.co/S76Xt5Z1/Whats-App-Image-2025-11-16-at-11-01-32-a967f556.jpg"
-    >
-      <div class="theme-btn-bg light" style="width:40px;"></div>
-      <div class="theme-btn-text-box">
-        <div class="theme-btn-text">Add to cart</div>
-        <div class="theme-btn-hover-text">Add to cart</div>
-      </div>
-    </button>
+  <div class="price-row">
+    <span>Total:</span>
+    <strong id="money-bouquet-price">£0.00</strong>
   </div>
 
-  <p class="product-detail-hint" style="margin-top:10px;">
-    Note: “Ultimate Valentine” includes free delivery & setup.
-  </p>
+  <button
+    type="button"
+    class="cart-button"
+    data-product-id="money-bouquet"
+    data-name="Money Bouquet"
+    data-price="0"
+    data-options-scope="#product-money-bouquet"
+    data-price-mode="lookup"
+    data-price-option="package"
+    data-price-map='{"Classic Romance":130,"Grand Love":250,"Forever Yours":350,"Ultimate Valentine":500}'
+    data-price-display="#money-bouquet-price"
+  >
+    Add to Cart
+  </button>
+
 </div>
-
-<script>
-/* =========================
-Option button selection (purple highlight)
-Stores selections for Money Bouquet and adds to localStorage cart
-========================= */
-
-(function () {
-  const root = document.querySelector('.product-detail-option-group[data-product="money-bouquet"]');
-  if (!root) return;
-
-  const cartKey = "preyes_cart_v1";
-
-  // Click-to-select for option-pill groups
-  root.addEventListener("click", (e) => {
-    const btn = e.target.closest(".option-pill");
-    if (!btn) return;
-
-    const type = btn.getAttribute("data-option-type");
-    if (!type) return;
-
-    // Make each option type behave like radio: only one selected per type
-    const siblings = root.querySelectorAll(`.option-pill[data-option-type="${type}"]`);
-    siblings.forEach(b => b.classList.remove("is-selected"));
-    btn.classList.add("is-selected");
-  });
-
-  function getSelectedValue(type) {
-    const selected = root.querySelector(`.option-pill[data-option-type="${type}"].is-selected`);
-    return selected ? selected.getAttribute("data-option-value") : "";
-  }
-
-  function getSelectedPrice() {
-    const selected = root.querySelector(`.option-pill[data-option-type="package"].is-selected`);
-    if (!selected) return 0;
-    const p = parseFloat(selected.getAttribute("data-price") || "0");
-    return Number.isFinite(p) ? p : 0;
-  }
-
-  function getMessage() {
-    const ta = root.querySelector(`textarea[data-option-type="message"]`);
-    return ta ? ta.value.trim() : "";
-  }
-
-  function readCart() {
-    try {
-      return JSON.parse(localStorage.getItem(cartKey) || "[]");
-    } catch {
-      return [];
-    }
-  }
-
-  function writeCart(cart) {
-    localStorage.setItem(cartKey, JSON.stringify(cart));
-  }
-
-  document.getElementById("addMoneyBouquetToCart")?.addEventListener("click", () => {
-    const packageName = getSelectedValue("package");
-    const price = getSelectedPrice();
-
-    if (!packageName) {
-      alert("Please choose a Money Bouquet package.");
-      return;
-    }
-
-    const champagne = getSelectedValue("champagne"); // optional
-    const message = getMessage(); // optional
-
-    const item = {
-      id: "money-bouquet",
-      name: "Money Bouquet",
-      qty: 1,
-      unitPrice: price,
-      image: "https://i.ibb.co/S76Xt5Z1/Whats-App-Image-2025-11-16-at-11-01-32-a967f556.jpg",
-      url: "/money-bouquet",
-      options: {
-        package: packageName,
-        champagne: champagne || "Not selected",
-        message: message || ""
-      }
-    };
-
-    const cart = readCart();
-    cart.push(item);
-    writeCart(cart);
-
-    // If you want: redirect to your Fillout pre-checkout page
-    // window.location.href = "/pre-checkout";
-
-    alert("Added to cart.");
-  });
-})();
-</script>
 
 
 
