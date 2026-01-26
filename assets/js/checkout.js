@@ -9,7 +9,7 @@
       const raw = localStorage.getItem(CART_KEY);
       const parsed = raw ? JSON.parse(raw) : [];
       return Array.isArray(parsed) ? parsed : [];
-    } catch (e) {
+    } catch {
       return [];
     }
   }
@@ -29,7 +29,6 @@
 
     const data = await res.json().catch(() => ({}));
     if (!res.ok) throw new Error(data.error || "Checkout session failed");
-
     return data;
   }
 
@@ -57,11 +56,7 @@
         btn.disabled = true;
         setStatus("Redirecting to secure checkout…");
 
-        const { url } = await createCheckoutSession({
-          cart,
-          deliveriesCount,
-        });
-
+        const { url } = await createCheckoutSession({ cart, deliveriesCount });
         window.location.href = url;
       } catch (err) {
         console.error(err);
