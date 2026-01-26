@@ -1,201 +1,220 @@
-/* /assets/js/cart.js */
+/* ============================
+   Preye's Cart (localStorage)
+   - Updates #nav-cart-count
+   - Works with .cart-button + option pills
+   ============================ */
+
 (function () {
   const CART_KEY = "preyes_cart_v1";
 
-  // ---------- helpers ----------
-  function safeJson(str, fallback = null) {
+  // ---------- Helpers ----------
+  function safeJSONParse(str, fallback) {
     try { return JSON.parse(str); } catch (e) { return fallback; }
   }
 
-  function money(n) {
-    const v = Number(n || 0);
-    return `£${v.toFixed(2)}`;
-  }
-
   function getCart() {
-    return safeJson(localStorage.getItem(CART_KEY), []) || [];
+    return safeJSONParse(localStorage.getItem(CART_KEY) || "[]", []);
   }
 
   function setCart(cart) {
     localStorage.setItem(CART_KEY, JSON.stringify(cart));
   }
 
-  function sameOptions(a, b) {
-    const ka = Object.keys(a || {}).sort();
-    const kb = Object.keys(b || {}).sort();
-    if (ka.length !== kb.length) return false;
-    for (let i = 0; i < ka.length; i++) {
-      const k = ka[i];
-      if (k !== kb[i]) return false;
-      if (String(a[k]) !== String(b[k])) return false;
-    }
-    return true;
+  function money(n) {
+    n = Number(n || 0);
+    return `£${n.toFixed(2)}`;
   }
 
-  function getScopeFromButton(btn) {
-    const sel = btn.getAttribute("data-options-scope");
-    if (sel) {
-      const el = document.querySelector(sel);
-      if (el) return el;
-    }
-    // fallback: closest common container
-    return btn.closest(".product-detail-btn-box") || document;
-  }
+  // ---------- Cart count UI ----------
+  function updateCartCountUI() {
+    const cart = getCart();
+    const count = cart.reduce((sum, item) => sum + Number(item.qty || 0), 0);
 
-  function getGroupValue(scope, groupName) {
-    // 1) hidden/text input with name=groupName (your current setup)
-    const input = scope.querySelector(`[name="${groupName}"]`);
-    if (input && String(input.value || "").trim() !== "") {
-      return String(input.value).trim();
-    }
+    // Your header badge
+    const navCount = document.getElementById("nav-cart-count");
+    if (navCount) navCount.textContent = String(count);
 
-    // 2) selected pill
-    const selected = scope.querySelector(
-      `[data-option-group="${groupName}"] .option-pill.is-selected`
-    );
-    if (selected) {
-      return selected.getAttribute("data-option-value") || selected.textContent.trim();
-    }
-
-    return "";
-  }
-
-  function ensureHiddenInput(scope, groupName) {
-    let input = scope.querySelector(`[name="${groupName}"]`);
-    if (!input) {
-      input = document.createElement("input");
-      input.type = "hidden";
-      input.name = groupName;
-      scope.appendChild(input);
-    }
-    return input;
-  }
-
-  function updatePriceFromButton(btn) {
-    const scope = getScopeFromButton(btn);
-
-    const priceMode = btn.getAttribute("data-price-mode");
-    const optionName = btn.getAttribute("data-price-option");
-    const mapStr = btn.getAttribute("data-price-map");
-    const displaySel = btn.getAttribute("data-price-display");
-
-    if (priceMode !== "lookup" || !optionName || !mapStr) return;
-
-    const map = safeJson(mapStr, {});
-    const chosen = getGroupValue(scope, optionName);
-    const price = Number(map[chosen] || 0);
-
-    // store computed price on button so cart uses it
-    btn.setAttribute("data-price", String(price));
-
-    if (displaySel) {
-      const priceEl = document.querySelector(displaySel);
-      if (priceEl) priceEl.textContent = money(price);
-    }
-  }
-
-  // ---------- 1) option pill clicks ----------
-  document.addEventListener("click", function (e) {
-    const pill = e.target.closest(".option-pill");
-    if (!pill) return;
-
-    const grid = pill.closest(".option-grid");
-    if (!grid) return;
-
-    const groupName = grid.getAttribute("data-option-group");
-    if (!groupName) return;
-
-    // scope should be the nearest product box
-    const scope = pill.closest(".product-detail-btn-box") || document;
-
-    // UI selection state
-    grid.querySelectorAll(".option-pill").forEach(b => b.classList.remove("is-selected"));
-    pill.classList.add("is-selected");
-
-    // write to hidden input (this is what many carts rely on)
-    const val = pill.getAttribute("data-option-value") || pill.textContent.trim();
-    const input = ensureHiddenInput(scope, groupName);
-    input.value = val;
-
-    // update price for the cart button inside THIS scope
-    const btn = scope.querySelector(".cart-button");
-    if (btn) updatePriceFromButton(btn);
-  });
-
-  // ---------- 2) add to cart clicks ----------
-  document.addEventListener("click", function (e) {
-    const btn = e.target.closest(".cart-button");
-    if (!btn) return;
-
-    const scope = getScopeFromButton(btn);
-
-    // Update price once more (in case user didn't click pill)
-    updatePriceFromButton(btn);
-
-    // Determine required groups:
-    // - if data-price-option is set, require that
-    // - also require any [data-option-group] inside scope
-    const required = new Set();
-    const priceOption = btn.getAttribute("data-price-option");
-    if (priceOption) required.add(priceOption);
-
-    scope.querySelectorAll("[data-option-group]").forEach(el => {
-      const g = el.getAttribute("data-option-group");
-      if (g) required.add(g);
+    // Optional generic support if you add [data-cart-count] elsewhere
+    document.querySelectorAll("[data-cart-count]").forEach((el) => {
+      el.textContent = String(count);
     });
+  }
 
-    // Validate
-    for (const groupName of required) {
-      const v = getGroupValue(scope, groupName);
-      if (!v) {
-        // match your current wording
-        alert(groupName === "package" ? "Pick a package first." : `Pick ${groupName} first.`);
-        return;
-      }
-    }
-
-    // Build options object from groups in scope
+  // ---------- Read selected options from a scope ----------
+  function readOptions(scopeEl) {
     const options = {};
-    required.forEach(groupName => {
-      options[groupName] = getGroupValue(scope, groupName);
+
+    // For every option grid (example: data-option-group="package")
+    scopeEl.querySelectorAll(".option-grid[data-option-group]").forEach((grid) => {
+      const groupName = grid.getAttribute("data-option-group");
+      const selected = grid.querySelector(".option-pill.is-selected");
+      if (groupName && selected) {
+        options[groupName] = selected.getAttribute("data-option-value") || selected.textContent.trim();
+      }
     });
 
-    // optional card message
-    const msgEl = scope.querySelector('textarea[name="card_message"]');
-    const card_message = msgEl ? String(msgEl.value || "").trim() : "";
+    // Also read hidden inputs inside scope (you already add these)
+    scopeEl.querySelectorAll('input[type="hidden"][name]').forEach((inp) => {
+      if (inp.value && !options[inp.name]) options[inp.name] = inp.value;
+    });
 
-    const id = btn.getAttribute("data-product-id") || "";
+    // Card message textarea (optional)
+    const msg = scopeEl.querySelector('textarea[name="card_message"]');
+    if (msg && msg.value.trim()) options.card_message = msg.value.trim();
+
+    return options;
+  }
+
+  function requireOption(scopeEl, groupName) {
+    const grid = scopeEl.querySelector(`.option-grid[data-option-group="${groupName}"]`);
+    if (!grid) return true; // if group doesn't exist, don't block
+    return !!grid.querySelector(".option-pill.is-selected");
+  }
+
+  // ---------- Price handling ----------
+  function getPriceFromButton(btn, scopeEl) {
+    const mode = btn.getAttribute("data-price-mode"); // "lookup" or "fixed"
+    if (mode === "fixed") {
+      return Number(btn.getAttribute("data-price") || 0);
+    }
+
+    if (mode === "lookup") {
+      const optionGroup = btn.getAttribute("data-price-option"); // e.g. "package"
+      const mapRaw = btn.getAttribute("data-price-map") || "{}";
+      const priceMap = safeJSONParse(mapRaw, {});
+      const options = readOptions(scopeEl);
+      const selectedVal = options[optionGroup];
+      return Number(priceMap[selectedVal] || 0);
+    }
+
+    return 0;
+  }
+
+  function updatePriceDisplay(btn) {
+    const scopeSelector = btn.getAttribute("data-options-scope");
+    const displaySelector = btn.getAttribute("data-price-display");
+
+    if (!scopeSelector || !displaySelector) return;
+
+    const scopeEl = document.querySelector(scopeSelector);
+    if (!scopeEl) return;
+
+    const price = getPriceFromButton(btn, scopeEl);
+
+    const priceEl = document.querySelector(displaySelector);
+    if (priceEl) priceEl.textContent = money(price);
+  }
+
+  // ---------- Add to cart ----------
+  function addToCart(btn) {
+    const scopeSelector = btn.getAttribute("data-options-scope");
+    const scopeEl = scopeSelector ? document.querySelector(scopeSelector) : null;
+
+    if (!scopeEl) {
+      alert("Cart error: options scope not found.");
+      return;
+    }
+
+    // REQUIRED: package must be selected
+    const mustPickPackage = !requireOption(scopeEl, "package") ? true : false;
+    if (mustPickPackage) {
+      alert("Please pick a package first.");
+      return;
+    }
+
+    const id = btn.getAttribute("data-product-id") || "unknown";
     const name = btn.getAttribute("data-name") || "Product";
-    const price = Number(btn.getAttribute("data-price") || 0);
+    const options = readOptions(scopeEl);
 
-    const item = {
-      id,
-      name,
-      price,
-      qty: 1,
-      options,
-      card_message
-    };
+    const price = getPriceFromButton(btn, scopeEl);
+    if (!price || price <= 0) {
+      alert("Please pick a package first.");
+      return;
+    }
 
     const cart = getCart();
 
-    // Merge if same product + same options + same message
-    const existing = cart.find(x =>
-      x.id === item.id &&
-      sameOptions(x.options, item.options) &&
-      String(x.card_message || "") === String(item.card_message || "")
-    );
+    // "same item" means same id + same options.package (and other options)
+    const signature = JSON.stringify({ id, options });
 
-    if (existing) existing.qty += 1;
-    else cart.push(item);
+    const existingIndex = cart.findIndex((item) => {
+      return JSON.stringify({ id: item.id, options: item.options }) === signature;
+    });
+
+    if (existingIndex > -1) {
+      cart[existingIndex].qty = Number(cart[existingIndex].qty || 0) + 1;
+    } else {
+      cart.push({
+        id,
+        name,
+        price,
+        qty: 1,
+        options,
+      });
+    }
 
     setCart(cart);
+    updateCartCountUI();
+    window.dispatchEvent(new Event("cart:updated"));
 
-    alert("Added to cart.");
+    // UI feedback
+    const original = btn.textContent;
+    btn.textContent = "Added ✓";
+    btn.disabled = true;
+    setTimeout(() => {
+      btn.textContent = original;
+      btn.disabled = false;
+    }, 800);
+  }
+
+  // ---------- Option pill selection + sync hidden inputs ----------
+  function handleOptionClick(e) {
+    const pill = e.target.closest(".option-pill");
+    if (!pill) return;
+
+    const grid = pill.closest(".option-grid[data-option-group]");
+    if (!grid) return;
+
+    // select only one within grid
+    grid.querySelectorAll(".option-pill").forEach((b) => b.classList.remove("is-selected"));
+    pill.classList.add("is-selected");
+
+    const groupName = grid.getAttribute("data-option-group"); // e.g. package
+    const scopeEl = pill.closest(".product-detail-btn-box") || pill.closest("[id^='product-']") || document;
+
+    // if there is a hidden input matching group name, set it
+    const hidden = scopeEl.querySelector(`input[type="hidden"][name="${groupName}"]`);
+    if (hidden) hidden.value = pill.getAttribute("data-option-value") || "";
+
+    // Update any price displays attached to cart buttons in this scope
+    scopeEl.querySelectorAll(".cart-button").forEach(updatePriceDisplay);
+  }
+
+  // ---------- Bind events ----------
+  document.addEventListener("click", function (e) {
+    // option pills
+    if (e.target.closest(".option-pill")) {
+      handleOptionClick(e);
+      return;
+    }
+
+    // add to cart
+    const btn = e.target.closest(".cart-button");
+    if (btn) {
+      addToCart(btn);
+      return;
+    }
   });
 
-  // ---------- 3) on load: sync prices if already selected ----------
+  // Initial update on page load
   document.addEventListener("DOMContentLoaded", function () {
-    document.querySelectorAll(".cart-button").forEach(updatePriceFromButton);
+    updateCartCountUI();
+    document.querySelectorAll(".cart-button").forEach(updatePriceDisplay);
   });
+
+  // Cross-tab updates
+  window.addEventListener("storage", function (e) {
+    if (e.key === CART_KEY) updateCartCountUI();
+  });
+
 })();
