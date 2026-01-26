@@ -86,7 +86,6 @@ Money Bouquet (single product) — option buttons
 Drop this inside your product page where your “Add to cart” area is.
 Requires the purple-highlight CSS you already asked for earlier.
 ========================= -->
-
 <div class="product-detail-btn-box" id="product-money-bouquet-mobile">
 
   <div class="product-detail-option-group">
@@ -98,6 +97,9 @@ Requires the purple-highlight CSS you already asked for earlier.
       <button type="button" class="option-pill" data-option-value="Forever Yours">£350 – Forever Yours</button>
       <button type="button" class="option-pill" data-option-value="Ultimate Valentine">£500 – Ultimate Valentine</button>
     </div>
+
+    <!-- cart.js can read this -->
+    <input type="hidden" name="package" id="money-bouquet-package-mobile" value="">
   </div>
 
   <div class="product-detail-option-group">
@@ -107,7 +109,7 @@ Requires the purple-highlight CSS you already asked for earlier.
 
   <div class="price-row">
     <span>Total:</span>
-    <strong id="money-bouquet-price">£0.00</strong>
+    <strong id="money-bouquet-price-mobile">£0.00</strong>
   </div>
 
   <button
@@ -115,24 +117,17 @@ Requires the purple-highlight CSS you already asked for earlier.
     class="cart-button"
     data-product-id="money-bouquet"
     data-name="Money Bouquet"
-    data-options-scope="#product-money-bouquet"
+    data-options-scope="#product-money-bouquet-mobile"
     data-price-mode="lookup"
     data-price-option="package"
     data-price-map='{"Classic Romance":130,"Grand Love":250,"Forever Yours":350,"Ultimate Valentine":500}'
-    data-price-display="#money-bouquet-price"
+    data-price-display="#money-bouquet-price-mobile"
   >
     Add to Cart
   </button>
-<input type="hidden" name="package" id="money-bouquet-package" value="">
+
 </div>
 
-
-
-
-
-
-                      
-                    </div>
 
                     <div class="product-detail-image-column show-desktop-tablet">
                        <div data-w-id="ad94eddc-83c5-8cfd-991f-c0bd6380befe" style="opacity: 1; transform: translate3d(0px, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg); transform-style: preserve-3d;" class="deal-right-box">
@@ -196,6 +191,9 @@ Requires the purple-highlight CSS you already asked for earlier.
       <button type="button" class="option-pill" data-option-value="Forever Yours">£350 – Forever Yours</button>
       <button type="button" class="option-pill" data-option-value="Ultimate Valentine">£500 – Ultimate Valentine</button>
     </div>
+
+    <!-- cart.js can read this -->
+    <input type="hidden" name="package" id="money-bouquet-package-desktop" value="">
   </div>
 
   <div class="product-detail-option-group">
@@ -205,7 +203,7 @@ Requires the purple-highlight CSS you already asked for earlier.
 
   <div class="price-row">
     <span>Total:</span>
-    <strong id="money-bouquet-price">£0.00</strong>
+    <strong id="money-bouquet-price-desktop">£0.00</strong>
   </div>
 
   <button
@@ -213,16 +211,17 @@ Requires the purple-highlight CSS you already asked for earlier.
     class="cart-button"
     data-product-id="money-bouquet"
     data-name="Money Bouquet"
-    data-options-scope="#product-money-bouquet"
+    data-options-scope="#product-money-bouquet-desktop"
     data-price-mode="lookup"
     data-price-option="package"
     data-price-map='{"Classic Romance":130,"Grand Love":250,"Forever Yours":350,"Ultimate Valentine":500}'
-    data-price-display="#money-bouquet-price"
+    data-price-display="#money-bouquet-price-desktop"
   >
     Add to Cart
   </button>
-<input type="hidden" name="package" id="money-bouquet-package" value="">
+
 </div>
+
 
 
 
@@ -408,9 +407,6 @@ Requires the purple-highlight CSS you already asked for earlier.
 
 <script>
 (function () {
-  const box = document.getElementById("product-money-bouquet");
-  if (!box) return;
-
   const priceMap = {
     "Classic Romance": 130,
     "Grand Love": 250,
@@ -418,34 +414,39 @@ Requires the purple-highlight CSS you already asked for earlier.
     "Ultimate Valentine": 500
   };
 
-  const priceEl = document.getElementById("money-bouquet-price");
-  const hiddenPackageInput = document.getElementById("money-bouquet-package");
+  function setupBox(boxId, priceId, hiddenId) {
+    const box = document.getElementById(boxId);
+    if (!box) return;
 
-  box.addEventListener("click", (e) => {
-    const btn = e.target.closest(".option-pill");
-    if (!btn) return;
+    const priceEl = document.getElementById(priceId);
+    const hiddenInput = document.getElementById(hiddenId);
 
-    const group = btn.closest(".option-grid");
-    if (!group) return;
+    box.addEventListener("click", (e) => {
+      const btn = e.target.closest(".option-pill");
+      if (!btn) return;
 
-    // remove previous selection
-    group.querySelectorAll(".option-pill").forEach(b =>
-      b.classList.remove("is-selected")
-    );
+      // Only react if this button is inside THIS box
+      if (!box.contains(btn)) return;
 
-    // select current
-    btn.classList.add("is-selected");
+      const group = btn.closest(".option-grid");
+      if (!group) return;
 
-    const value = btn.getAttribute("data-option-value");
-    const price = priceMap[value] || 0;
+      // highlight selection in this group only
+      group.querySelectorAll(".option-pill").forEach(b => b.classList.remove("is-selected"));
+      btn.classList.add("is-selected");
 
-    // 🔑 THIS IS THE IMPORTANT PART
-    hiddenPackageInput.value = value;
+      const value = btn.getAttribute("data-option-value") || "";
+      const price = priceMap[value] || 0;
 
-    if (priceEl) {
-      priceEl.textContent = `£${price.toFixed(2)}`;
-    }
-  });
+      if (hiddenInput) hiddenInput.value = value;
+      if (priceEl) priceEl.textContent = `£${price.toFixed(2)}`;
+    });
+  }
+
+  // Mobile
+  setupBox("product-money-bouquet-mobile", "money-bouquet-price-mobile", "money-bouquet-package-mobile");
+
+  // Desktop
+  setupBox("product-money-bouquet-desktop", "money-bouquet-price-desktop", "money-bouquet-package-desktop");
 })();
 </script>
-
