@@ -6,6 +6,31 @@ permalink: /money-bouquet/
 ---
 
 
+
+<style>
+  /* Default: desktop + tablet */
+  .show-desktop-tablet { display: block; }
+  .show-mobile { display: none; }
+
+  /* Mobile only */
+  @media screen and (max-width: 767px) {
+    .show-desktop-tablet { display: none; }
+    .show-mobile { display: block; }
+  }
+</style>
+<style>
+  /* Default: desktop + tablet */
+  .show-desktop-tablet { display: block; }
+  .show-mobile { display: none; }
+
+  /* Mobile only */
+  @media screen and (max-width: 767px) {
+    .show-desktop-tablet { display: none; }
+    .show-mobile { display: block; }
+  }
+</style>
+
+
          <section class="product-detail2">
             <div class="w-layout-blockcontainer container w-container">
                 <div class="w-layout-grid product-detail-griid">
@@ -98,7 +123,7 @@ Requires the purple-highlight CSS you already asked for earlier.
   >
     Add to Cart
   </button>
-
+<input type="hidden" name="package" id="money-bouquet-package" value="">
 </div>
 
 
@@ -196,7 +221,7 @@ Requires the purple-highlight CSS you already asked for earlier.
   >
     Add to Cart
   </button>
-
+<input type="hidden" name="package" id="money-bouquet-package" value="">
 </div>
 
 
@@ -377,5 +402,50 @@ Requires the purple-highlight CSS you already asked for earlier.
                     </div>
                 </div>
             </div>
-        </section>
         
+        </section>
+
+
+<script>
+(function () {
+  const box = document.getElementById("product-money-bouquet");
+  if (!box) return;
+
+  const priceMap = {
+    "Classic Romance": 130,
+    "Grand Love": 250,
+    "Forever Yours": 350,
+    "Ultimate Valentine": 500
+  };
+
+  const priceEl = document.getElementById("money-bouquet-price");
+  const hiddenPackageInput = document.getElementById("money-bouquet-package");
+
+  box.addEventListener("click", (e) => {
+    const btn = e.target.closest(".option-pill");
+    if (!btn) return;
+
+    const group = btn.closest(".option-grid");
+    if (!group) return;
+
+    // remove previous selection
+    group.querySelectorAll(".option-pill").forEach(b =>
+      b.classList.remove("is-selected")
+    );
+
+    // select current
+    btn.classList.add("is-selected");
+
+    const value = btn.getAttribute("data-option-value");
+    const price = priceMap[value] || 0;
+
+    // 🔑 THIS IS THE IMPORTANT PART
+    hiddenPackageInput.value = value;
+
+    if (priceEl) {
+      priceEl.textContent = `£${price.toFixed(2)}`;
+    }
+  });
+})();
+</script>
+
