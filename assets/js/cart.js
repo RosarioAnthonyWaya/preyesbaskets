@@ -4,10 +4,7 @@
   const CART_KEY = "preyes_cart_v1";
   const DELIVERY_KEY = "preyes_deliveries_v1";
 
-  // Products that qualify for the £8 shipping ONLY if they are the ONLY items in cart.
   const SHIPPING_EXCEPTION_IDS = new Set(["holiday-cheer", "joyful-baskets"]);
-
-  // Shipping rates (per delivery)
   const SHIPPING_STANDARD = 11;
   const SHIPPING_EXCEPTION = 8;
 
@@ -25,7 +22,7 @@
       const raw = localStorage.getItem(CART_KEY);
       const parsed = raw ? JSON.parse(raw) : [];
       return Array.isArray(parsed) ? parsed : [];
-    } catch (e) {
+    } catch {
       return [];
     }
   }
@@ -58,8 +55,6 @@
 
   function cartHasOnlyExceptionItems(cart) {
     if (!cart.length) return false;
-
-    // Every item must be one of the exception IDs
     return cart.every((item) => SHIPPING_EXCEPTION_IDS.has(item.id));
   }
 
@@ -82,14 +77,117 @@
     return cart.findIndex((x) => x.id === id && (x.variantKey || "") === (variantKey || ""));
   }
 
-  // Build a stable variant key from selected options (so "Red / M" is a distinct cart line)
   function buildVariantKey(options) {
     if (!options || typeof options !== "object") return "";
     const keys = Object.keys(options).sort();
     return keys.map((k) => `${k}:${String(options[k]).trim()}`).join("|");
   }
 
-  // Public API
+  // -------- NEW: Pill UI support --------
+
+  function getSelectedPillOptions(scope) {
+    // Reads: .option-grid[data-option-group] .option-pill.is-selected (or aria-pressed="true")
+    const options = {};
+    scope.querySelectorAll(".option-grid[data-option-group]").forEach((grid) => {
+      const group = grid.getAttribute("data-option-group");
+      if (!group) return;
+
+      const selected = grid.querySelector(".option-pill.is-selected, .option-pill[aria-pressed='true']");
+      if (selected) options[group] = selected.getAttribute("data-option-value") || selected.textContent.trim();
+    });
+    return options;
+  }
+
+  function getFormOptions(scope, options) {
+    // radios
+    scope.querySelectorAll('input[type="radio"]:checked').forEach((r) => {
+      if (r.name) options[r.name] = r.value;
+    });
+
+    // checkboxes
+    scope.querySelectorAll('input[type="checkbox"]').forEach((c) => {
+      if (!c.name) return;
+      if (!options[c.name]) options[c.name] = [];
+      if (c.checked) options[c.name].push(c.value || "Yes");
+    });
+
+    // selects
+    scope.querySelectorAll("select").forEach((s) => {
+      if (s.name) options[s.name] = s.value;
+    });
+
+    // textareas
+    scope.querySelectorAll("textarea").forEach((t) => {
+      if (t.name) options[t.name] = t.value.trim();
+    });
+
+    // text inputs
+    scope.querySelectorAll('input[type="text"]').forEach((t) => {
+      if (t.name) options[t.name] = t.value.trim();
+    });
+
+    return options;
+  }
+
+  function parseJsonAttr(el, attr, fallback) {
+    const raw = el.getAttribute(attr);
+    if (!raw) return fallback;
+    try {
+      return JSON.parse(raw);
+    } catch {
+      return fallback;
+    }
+  }
+
+  function computeDynamicPrice(btn, options) {
+    const mode = (btn.getAttribute("data-price-mode") || "").trim();
+
+    // default fallback: data-price
+    const base = safeNumber(btn.getAttribute("data-price"), 0);
+
+    if (!mode) return base;
+
+    // mode="lookup": price = map[ options[priceOption] ]
+    if (mode === "lookup") {
+      const priceOption = btn.getAttribute("data-price-option"); // e.g. "package"
+      const map = parseJsonAttr(btn, "data-price-map", {});
+      const chosen = priceOption ? options[priceOption] : null;
+      const p = chosen ? safeNumber(map[chosen], 0) : 0;
+      return p > 0 ? p : 0;
+    }
+
+    // mode="basePlus": base + sum(addonMap[group][value])
+    if (mode === "basePlus") {
+      const addonMap = parseJsonAttr(btn, "data-addon-map", {});
+      let total = base;
+
+      Object.keys(options || {}).forEach((group) => {
+        const val = options[group];
+        if (addonMap[group] && typeof addonMap[group] === "object") {
+          if (Array.isArray(val)) {
+            val.forEach((v) => (total += safeNumber(addonMap[group][v], 0)));
+          } else {
+            total += safeNumber(addonMap[group][val], 0);
+          }
+        }
+      });
+
+      return total;
+    }
+
+    return base;
+  }
+
+  function setPriceDisplay(btn, price) {
+    const displaySel = btn.getAttribute("data-price-display");
+    if (!displaySel) return;
+    const el = document.querySelector(displaySel);
+    if (!el) return;
+    el.textContent = moneyGBP(price);
+  }
+
+  // -------- Cart API --------
+
   const CartAPI = {
     readCart,
     writeCart,
@@ -113,7 +211,7 @@
     const variantKey = buildVariantKey(options);
 
     if (!id || !name || !Number.isFinite(price) || price <= 0) {
-      console.warn("Invalid product:", product);
+      console.warn("Invalid product (missing/zero price is not allowed):", product);
       return;
     }
 
@@ -122,14 +220,7 @@
     if (idx >= 0) {
       cart[idx].quantity = Math.max(1, Math.floor(safeNumber(cart[idx].quantity, 1))) + quantity;
     } else {
-      cart.push({
-        id,
-        name,
-        price,
-        quantity,
-        options,
-        variantKey,
-      });
+      cart.push({ id, name, price, quantity, options, variantKey });
     }
 
     writeCart(cart);
@@ -145,8 +236,7 @@
     const idx = findCartItemIndex(cart, id, variantKey);
     if (idx < 0) return;
 
-    const qty = Math.max(1, Math.floor(safeNumber(newQty, 1)));
-    cart[idx].quantity = qty;
+    cart[idx].quantity = Math.max(1, Math.floor(safeNumber(newQty, 1)));
     writeCart(cart);
   }
 
@@ -154,11 +244,42 @@
     writeCart([]);
   }
 
-  // Attach click handlers for any button with .cart-button
-  // Supports:
-  // data-product-id, data-name, data-price
-  // optional: data-quantity-input="inputId"
-  // optional: data-options-scope="#product-options" (we will read selected radios/checkboxes/textareas inside)
+  function bindOptionPills() {
+    document.addEventListener("click", (e) => {
+      const pill = e.target.closest(".option-pill");
+      if (!pill) return;
+
+      const grid = pill.closest(".option-grid[data-option-group]");
+      if (!grid) return;
+
+      e.preventDefault();
+
+      // single-select within a group
+      grid.querySelectorAll(".option-pill").forEach((b) => {
+        b.classList.remove("is-selected");
+        b.setAttribute("aria-pressed", "false");
+      });
+      pill.classList.add("is-selected");
+      pill.setAttribute("aria-pressed", "true");
+
+      // if this options block contains a cart button, update displayed price
+      const block = pill.closest(".product-detail-btn-box");
+      if (!block) return;
+
+      const btn = block.querySelector(".cart-button");
+      if (!btn) return;
+
+      const scopeSel = btn.getAttribute("data-options-scope") || btn.getAttribute("data-options-source");
+      const scope = scopeSel ? document.querySelector(scopeSel) : block;
+
+      const options = getFormOptions(scope, getSelectedPillOptions(scope));
+      const price = computeDynamicPrice(btn, options);
+
+      setPriceDisplay(btn, price);
+      btn.setAttribute("data-price", String(price)); // so add-to-cart uses latest
+    });
+  }
+
   function bindAddToCartButtons() {
     document.addEventListener("click", (e) => {
       const btn = e.target.closest(".cart-button");
@@ -168,7 +289,6 @@
 
       const id = btn.getAttribute("data-product-id");
       const name = btn.getAttribute("data-name");
-      const price = safeNumber(btn.getAttribute("data-price"), 0);
 
       // Quantity
       let qty = 1;
@@ -178,53 +298,30 @@
         if (qtyEl) qty = Math.max(1, Math.floor(safeNumber(qtyEl.value, 1)));
       }
 
-      // Options
-      const options = {};
-      const scopeSel = btn.getAttribute("data-options-scope");
-      if (scopeSel) {
-        const scope = document.querySelector(scopeSel);
-        if (scope) {
-          // radio groups
-          scope.querySelectorAll('input[type="radio"]:checked').forEach((r) => {
-            if (r.name) options[r.name] = r.value;
-          });
+      // Options scope (supports both attributes)
+      const scopeSel = btn.getAttribute("data-options-scope") || btn.getAttribute("data-options-source");
+      const scope = scopeSel ? document.querySelector(scopeSel) : null;
 
-          // checkboxes
-          scope.querySelectorAll('input[type="checkbox"]').forEach((c) => {
-            if (!c.name) return;
-            if (!options[c.name]) options[c.name] = [];
-            if (c.checked) options[c.name].push(c.value || "Yes");
-          });
-          // Convert single-element checkbox arrays to "Yes" if you want; leaving array is fine.
+      const options = scope ? getFormOptions(scope, getSelectedPillOptions(scope)) : {};
 
-          // selects
-          scope.querySelectorAll("select").forEach((s) => {
-            if (s.name) options[s.name] = s.value;
-          });
+      // Dynamic price
+      const dynamicPrice = computeDynamicPrice(btn, options);
+      btn.setAttribute("data-price", String(dynamicPrice));
+      setPriceDisplay(btn, dynamicPrice);
 
-          // textareas
-          scope.querySelectorAll("textarea").forEach((t) => {
-            if (t.name) options[t.name] = t.value.trim();
-          });
-
-          // text inputs (optional)
-          scope.querySelectorAll('input[type="text"]').forEach((t) => {
-            if (t.name) options[t.name] = t.value.trim();
-          });
-        }
+      // Guard: must have a valid price
+      if (dynamicPrice <= 0) {
+        console.warn("Price is 0. Select options or fix mapping.", { id, name, options });
+        return;
       }
 
-      addToCart({ id, name, price, quantity: qty, options });
+      addToCart({ id, name, price: dynamicPrice, quantity: qty, options });
 
-      // Optional UX: show toast or change button text
       btn.classList.add("added");
       setTimeout(() => btn.classList.remove("added"), 600);
     });
   }
 
-  // Render cart if a container exists
-  // Required elements (if you want it auto):
-  // #cart-items, #cart-subtotal, #cart-shipping, #cart-total, #deliveries-count (input)
   function renderCart() {
     const cart = readCart();
 
@@ -236,7 +333,6 @@
     const emptyEl = document.getElementById("cart-empty");
 
     const deliveries = getDeliveriesCount();
-
     if (deliveriesInput) deliveriesInput.value = deliveries;
 
     if (itemsWrap) {
@@ -252,14 +348,14 @@
         const line = document.createElement("div");
         line.className = "cart-line";
 
-        const optionsText = item.options && Object.keys(item.options).length
-          ? Object.entries(item.options)
-              .map(([k, v]) => {
-                if (Array.isArray(v)) return `${k}: ${v.join(", ")}`;
-                return `${k}: ${String(v)}`;
-              })
-              .join(" • ")
-          : "";
+        const optionsText =
+          item.options && Object.keys(item.options).length
+            ? Object.entries(item.options)
+                .map(([k, v]) => (Array.isArray(v) ? `${k}: ${v.join(", ")}` : `${k}: ${String(v)}`))
+                .join(" • ")
+            : "";
+
+        const qtyNum = Math.max(1, Math.floor(safeNumber(item.quantity, 1)));
 
         line.innerHTML = `
           <div class="cart-line-left">
@@ -272,9 +368,9 @@
 
           <div class="cart-line-right">
             <div class="cart-line-price">${moneyGBP(item.price)}</div>
-            <input class="cart-qty" type="number" min="1" value="${Math.max(1, Math.floor(safeNumber(item.quantity, 1)))}"
+            <input class="cart-qty" type="number" min="1" value="${qtyNum}"
               data-id="${item.id}" data-variant="${item.variantKey || ""}" />
-            <div class="cart-line-lineTotal">${moneyGBP(item.price * Math.max(1, Math.floor(safeNumber(item.quantity, 1))))}</div>
+            <div class="cart-line-lineTotal">${moneyGBP(item.price * qtyNum)}</div>
           </div>
         `;
 
@@ -296,11 +392,7 @@
       const qty = e.target.closest(".cart-qty");
       if (!qty) return;
 
-      const id = qty.getAttribute("data-id");
-      const variantKey = qty.getAttribute("data-variant") || "";
-      const newQty = qty.value;
-
-      updateQuantity(id, variantKey, newQty);
+      updateQuantity(qty.getAttribute("data-id"), qty.getAttribute("data-variant") || "", qty.value);
     });
 
     document.addEventListener("click", (e) => {
@@ -308,9 +400,7 @@
       if (!removeBtn) return;
 
       e.preventDefault();
-      const id = removeBtn.getAttribute("data-id");
-      const variantKey = removeBtn.getAttribute("data-variant") || "";
-      removeFromCart(id, variantKey);
+      removeFromCart(removeBtn.getAttribute("data-id"), removeBtn.getAttribute("data-variant") || "");
     });
 
     const deliveriesInput = document.getElementById("deliveries-count");
@@ -325,14 +415,13 @@
     window.addEventListener("deliveries:updated", renderCart);
   }
 
-  // Init
   document.addEventListener("DOMContentLoaded", () => {
+    bindOptionPills();
     bindAddToCartButtons();
     bindCartInteractions();
     renderCart();
   });
 
-  // Optional: expose helpers
   window.PreyesCartActions = {
     addToCart,
     removeFromCart,
