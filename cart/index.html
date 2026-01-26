@@ -1,0 +1,111 @@
+---
+layout: default
+title: Cart
+permalink: /cart/
+---
+
+<h1>Your cart</h1>
+
+<div id="cart-empty" style="display:none;">
+  <p>Your cart is empty.</p>
+</div>
+
+<div id="cart-wrap" style="display:none;">
+  <div id="cart-items"></div>
+
+  <hr>
+  <p><strong>Total: <span id="cart-total">£0.00</span></strong></p>
+  <a class="w-button" href="/checkout/">Checkout</a>
+</div>
+
+<script>
+(function () {
+  const CART_KEY = "preyes_cart_v1";
+
+  function money(n){ n = Number(n||0); return `£${n.toFixed(2)}`; }
+  function getCart(){
+    try { return JSON.parse(localStorage.getItem(CART_KEY) || "[]"); }
+    catch(e){ return []; }
+  }
+  function setCart(cart){
+    localStorage.setItem(CART_KEY, JSON.stringify(cart));
+  }
+
+  const emptyEl = document.getElementById("cart-empty");
+  const wrapEl  = document.getElementById("cart-wrap");
+  const itemsEl = document.getElementById("cart-items");
+  const totalEl = document.getElementById("cart-total");
+
+  function render(){
+    const cart = getCart();
+
+    if (!cart.length){
+      emptyEl.style.display = "block";
+      wrapEl.style.display = "none";
+      itemsEl.innerHTML = "";
+      totalEl.textContent = money(0);
+      return;
+    }
+
+    emptyEl.style.display = "none";
+    wrapEl.style.display = "block";
+
+    let total = 0;
+
+    itemsEl.innerHTML = cart.map((item, idx) => {
+      const line = Number(item.price||0) * Number(item.qty||0);
+      total += line;
+
+      const opts = item.options ? Object.entries(item.options)
+        .map(([k,v]) => `${k}: ${v}`).join(", ") : "";
+
+      const msg = item.card_message ? `Card: ${item.card_message}` : "";
+
+      return `
+        <div class="cart-item" style="padding:12px 0; border-bottom:1px solid #eee;">
+          <div><strong>${item.name}</strong></div>
+          <div style="opacity:.8;">${opts}${opts && msg ? " | " : ""}${msg}</div>
+          <div style="margin-top:6px;">
+            <button data-dec="${idx}">-</button>
+            <span style="display:inline-block; min-width:28px; text-align:center;">${item.qty}</span>
+            <button data-inc="${idx}">+</button>
+            <span style="margin-left:10px;">${money(item.price)} each</span>
+            <span style="margin-left:10px;"><strong>${money(line)}</strong></span>
+            <button data-del="${idx}" style="margin-left:10px;">Remove</button>
+          </div>
+        </div>
+      `;
+    }).join("");
+
+    totalEl.textContent = money(total);
+  }
+
+  document.addEventListener("click", (e) => {
+    const cart = getCart();
+
+    const inc = e.target.getAttribute("data-inc");
+    const dec = e.target.getAttribute("data-dec");
+    const del = e.target.getAttribute("data-del");
+
+    if (inc !== null){
+      cart[Number(inc)].qty += 1;
+      setCart(cart); render(); window.dispatchEvent(new Event("cart:updated"));
+    }
+    if (dec !== null){
+      const i = Number(dec);
+      cart[i].qty -= 1;
+      if (cart[i].qty <= 0) cart.splice(i,1);
+      setCart(cart); render(); window.dispatchEvent(new Event("cart:updated"));
+    }
+    if (del !== null){
+      cart.splice(Number(del), 1);
+      setCart(cart); render(); window.dispatchEvent(new Event("cart:updated"));
+    }
+  });
+
+  window.addEventListener("cart:updated", render);
+  window.addEventListener("storage", (e) => { if (e.key === CART_KEY) render(); });
+
+  render();
+})();
+</script>
