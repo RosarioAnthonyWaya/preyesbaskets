@@ -63,24 +63,43 @@ Requires the purple-highlight CSS you already asked for earlier.
 ========================= -->
 
 <div class="product-detail-btn-box" id="product-money-bouquet-mobile">
-  ...
-  <strong id="money-bouquet-price-mobile">£0.00</strong>
+
+  <div class="product-detail-option-group">
+    <div class="field-label">Choose package</div>
+
+    <div class="option-grid" data-option-group="package">
+      <button type="button" class="option-pill" data-option-value="Classic Romance">£130 – Classic Romance</button>
+      <button type="button" class="option-pill" data-option-value="Grand Love">£250 – Grand Love</button>
+      <button type="button" class="option-pill" data-option-value="Forever Yours">£350 – Forever Yours</button>
+      <button type="button" class="option-pill" data-option-value="Ultimate Valentine">£500 – Ultimate Valentine</button>
+    </div>
+  </div>
+
+  <div class="product-detail-option-group">
+    <div class="field-label">Card message (optional)</div>
+    <textarea name="card_message" rows="3" placeholder="Write your message…"></textarea>
+  </div>
+
+  <div class="price-row">
+    <span>Total:</span>
+    <strong id="money-bouquet-price">£0.00</strong>
+  </div>
 
   <button
     type="button"
     class="cart-button"
     data-product-id="money-bouquet"
     data-name="Money Bouquet"
-    data-options-scope="#product-money-bouquet-mobile"
+    data-options-scope="#product-money-bouquet"
     data-price-mode="lookup"
     data-price-option="package"
     data-price-map='{"Classic Romance":130,"Grand Love":250,"Forever Yours":350,"Ultimate Valentine":500}'
-    data-price-display="#money-bouquet-price-mobile"
+    data-price-display="#money-bouquet-price"
   >
     Add to Cart
   </button>
-</div>
 
+</div>
 
 
 
@@ -140,25 +159,45 @@ Money Bouquet (single product) — option buttons
 Drop this inside your product page where your “Add to cart” area is.
 Requires the purple-highlight CSS you already asked for earlier.
 ========================= -->
+
 <div class="product-detail-btn-box" id="product-money-bouquet-desktop">
-  ...
-  <strong id="money-bouquet-price-desktop">£0.00</strong>
+
+  <div class="product-detail-option-group">
+    <div class="field-label">Choose package</div>
+
+    <div class="option-grid" data-option-group="package">
+      <button type="button" class="option-pill" data-option-value="Classic Romance">£130 – Classic Romance</button>
+      <button type="button" class="option-pill" data-option-value="Grand Love">£250 – Grand Love</button>
+      <button type="button" class="option-pill" data-option-value="Forever Yours">£350 – Forever Yours</button>
+      <button type="button" class="option-pill" data-option-value="Ultimate Valentine">£500 – Ultimate Valentine</button>
+    </div>
+  </div>
+
+  <div class="product-detail-option-group">
+    <div class="field-label">Card message (optional)</div>
+    <textarea name="card_message" rows="3" placeholder="Write your message…"></textarea>
+  </div>
+
+  <div class="price-row">
+    <span>Total:</span>
+    <strong id="money-bouquet-price">£0.00</strong>
+  </div>
 
   <button
     type="button"
     class="cart-button"
     data-product-id="money-bouquet"
     data-name="Money Bouquet"
-    data-options-scope="#product-money-bouquet-desktop"
+    data-options-scope="#product-money-bouquet"
     data-price-mode="lookup"
     data-price-option="package"
     data-price-map='{"Classic Romance":130,"Grand Love":250,"Forever Yours":350,"Ultimate Valentine":500}'
-    data-price-display="#money-bouquet-price-desktop"
+    data-price-display="#money-bouquet-price"
   >
     Add to Cart
   </button>
-</div>
 
+</div>
 
 
 
