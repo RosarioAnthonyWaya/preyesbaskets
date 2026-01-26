@@ -7,6 +7,7 @@ permalink: /money-bouquet/
 
 
 
+
 <style>
   /* Default: desktop + tablet */
   .show-desktop-tablet { display: block; }
@@ -126,10 +127,10 @@ Requires the purple-highlight CSS you already asked for earlier.
     Add to Cart
   </button>
 
-</div>
+</div>              
+            </div>
 
-
-                    <div class="product-detail-image-column show-desktop-tablet">
+             <div class="product-detail-image-column show-desktop-tablet">
                        <div data-w-id="ad94eddc-83c5-8cfd-991f-c0bd6380befe" style="opacity: 1; transform: translate3d(0px, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg); transform-style: preserve-3d;" class="deal-right-box">
                         <div data-current="Tab 1" data-easing="ease" data-duration-in="300" data-duration-out="100" class="deal-tabs w-tabs">
                             <div class="deal-tabs-content w-tab-content">
@@ -229,7 +230,8 @@ Requires the purple-highlight CSS you already asked for earlier.
                       
                     </div>
                 </div>
-            </div>
+
+
         </section>
 
   
@@ -403,50 +405,3 @@ Requires the purple-highlight CSS you already asked for earlier.
             </div>
         
         </section>
-
-
-<script>
-(function () {
-  const priceMap = {
-    "Classic Romance": 130,
-    "Grand Love": 250,
-    "Forever Yours": 350,
-    "Ultimate Valentine": 500
-  };
-
-  function setupBox(boxId, priceId, hiddenId) {
-    const box = document.getElementById(boxId);
-    if (!box) return;
-
-    const priceEl = document.getElementById(priceId);
-    const hiddenInput = document.getElementById(hiddenId);
-
-    box.addEventListener("click", (e) => {
-      const btn = e.target.closest(".option-pill");
-      if (!btn) return;
-
-      // Only react if this button is inside THIS box
-      if (!box.contains(btn)) return;
-
-      const group = btn.closest(".option-grid");
-      if (!group) return;
-
-      // highlight selection in this group only
-      group.querySelectorAll(".option-pill").forEach(b => b.classList.remove("is-selected"));
-      btn.classList.add("is-selected");
-
-      const value = btn.getAttribute("data-option-value") || "";
-      const price = priceMap[value] || 0;
-
-      if (hiddenInput) hiddenInput.value = value;
-      if (priceEl) priceEl.textContent = `£${price.toFixed(2)}`;
-    });
-  }
-
-  // Mobile
-  setupBox("product-money-bouquet-mobile", "money-bouquet-price-mobile", "money-bouquet-package-mobile");
-
-  // Desktop
-  setupBox("product-money-bouquet-desktop", "money-bouquet-price-desktop", "money-bouquet-package-desktop");
-})();
-</script>
