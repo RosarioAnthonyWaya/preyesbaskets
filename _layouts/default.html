@@ -20,36 +20,29 @@
     {% include footer.html %}
   </div>
 
-  <!-- CART DRAWER (ONLY ONE — CORRECT VERSION) -->
+  <!-- CART OVERLAY -->
+  <div id="cart-overlay" class="cart-overlay" hidden></div>
 
-
-<!-- CART OVERLAY -->
-<div id="cart-overlay" class="cart-overlay" hidden></div>
-
-<!-- CART DRAWER -->
-<aside id="cart-drawer" class="cart-drawer" aria-hidden="true">
-  <div class="cart-drawer-header">
-    <h3>Your cart</h3>
-    <button type="button" id="cart-close-button" aria-label="Close cart">×</button>
-  </div>
-
-  <div id="cart-items"></div>
-
-  <div class="cart-drawer-footer">
-    <div class="cart-total-row">
-      <span>Total</span>
-      <strong id="cart-total">£0.00</strong>
+  <!-- CART DRAWER -->
+  <aside id="cart-drawer" class="cart-drawer" aria-hidden="true">
+    <div class="cart-drawer-header">
+      <h3>Your cart</h3>
+      <button type="button" id="cart-close-button" aria-label="Close cart">×</button>
     </div>
 
-    <a href="/checkout/" class="w-button">Checkout</a>
-  </div>
-</aside>
+    <div id="cart-items"></div>
 
+    <div class="cart-drawer-footer">
+      <div class="cart-total-row">
+        <span>Total</span>
+        <strong id="cart-total">£0.00</strong>
+      </div>
+
+      <a href="/checkout/" class="w-button">Checkout</a>
+    </div>
+  </aside>
 
   <!-- Load cart system LAST -->
   <script src="{{ '/assets/js/cart.js' | relative_url }}"></script>
- 
-
 </body>
-
 </html>
