@@ -1,24 +1,32 @@
-/* assets/js/cart.js */
 (function () {
   const CART_KEY = "preyes_cart_v1";
-  const DELIVERY_KEY = "preyes_deliveries_v1";
 
-  const drawer = document.getElementById("cart-drawer");
-  const overlay = document.getElementById("cart-overlay");
-  const itemsEl = document.getElementById("cart-items");
-  const totalEl = document.getElementById("cart-total");
-  const badgeEl = document.getElementById("nav-cart-count");
+  const qs = (s, root = document) => root.querySelector(s);
+  const qsa = (s, root = document) => Array.from(root.querySelectorAll(s));
 
-  const openBtn = document.getElementById("cart-open-button");
-  const closeBtn = document.getElementById("cart-close-button");
+  const drawer = qs("#cart-drawer");
+  const overlay = qs("#cart-overlay");
+  const openBtn = qs("#cart-open-button");
+  const closeBtn = qs("#cart-close-button");
+  const navCount = qs("#nav-cart-count");
 
-  if (!drawer || !overlay || !itemsEl || !totalEl) return;
+  const itemsWrap = qs("#cart-items");
+  const totalEl = qs("#cart-total");
 
+  if (!drawer || !overlay || !openBtn || !closeBtn || !itemsWrap || !totalEl) return;
+
+  // ---- HARD RESET ON LOAD (prevents "starts open" / weird state) ----
+  overlay.hidden = true;
+  drawer.classList.remove("is-open");
+  drawer.setAttribute("aria-hidden", "true");
+  document.documentElement.classList.remove("cart-lock");
+  document.body.classList.remove("cart-lock");
+
+  // ---- storage helpers ----
   function readCart() {
     try {
       const raw = localStorage.getItem(CART_KEY);
-      const parsed = raw ? JSON.parse(raw) : [];
-      return Array.isArray(parsed) ? parsed : [];
+      return raw ? JSON.parse(raw) : [];
     } catch {
       return [];
     }
@@ -29,212 +37,216 @@
   }
 
   function money(n) {
-    const num = Number(n) || 0;
-    return `£${num.toFixed(2)}`;
+    const x = Number(n) || 0;
+    return `£${x.toFixed(2)}`;
   }
 
-  function calcTotal(cart) {
-    return cart.reduce((sum, item) => sum + (Number(item.price) || 0) * (Number(item.qty) || 1), 0);
-  }
-
-  function updateBadge() {
-    const cart = readCart();
-    const count = cart.reduce((sum, item) => sum + (Number(item.qty) || 1), 0);
-    if (badgeEl) badgeEl.textContent = String(count);
-  }
-
+  // ---- UI open/close ----
   function openCart() {
     overlay.hidden = false;
     drawer.classList.add("is-open");
     drawer.setAttribute("aria-hidden", "false");
-    document.body.classList.add("cart-open");
+    document.documentElement.classList.add("cart-lock");
+    document.body.classList.add("cart-lock");
   }
 
   function closeCart() {
+    overlay.hidden = true;
     drawer.classList.remove("is-open");
     drawer.setAttribute("aria-hidden", "true");
-    document.body.classList.remove("cart-open");
-    // wait for transition then hide overlay
-    setTimeout(() => {
-      overlay.hidden = true;
-    }, 250);
+    document.documentElement.classList.remove("cart-lock");
+    document.body.classList.remove("cart-lock");
   }
 
-  function renderCart() {
+  // ---- render ----
+  function calc(cart) {
+    let qty = 0;
+    let total = 0;
+    cart.forEach(i => {
+      const q = Number(i.qty) || 0;
+      const p = Number(i.price) || 0;
+      qty += q;
+      total += q * p;
+    });
+    return { qty, total };
+  }
+
+  function updateBadge(cart) {
+    const { qty } = calc(cart);
+    if (navCount) navCount.textContent = String(qty);
+  }
+
+  function render() {
     const cart = readCart();
+    itemsWrap.innerHTML = "";
 
     if (!cart.length) {
-      itemsEl.innerHTML = `<p style="opacity:.75;margin:0;">Your cart is empty.</p>`;
+      itemsWrap.innerHTML = `<p style="margin:0; padding: 16px;">Your cart is empty.</p>`;
       totalEl.textContent = money(0);
-      updateBadge();
+      updateBadge(cart);
       return;
     }
 
-    itemsEl.innerHTML = cart.map((item, idx) => {
-      const title = item.name || "Item";
-      const opt = item.package ? `Package: ${item.package}` : "";
-      const price = money(item.price);
-      const qty = Number(item.qty) || 1;
+    cart.forEach((item, idx) => {
+      const line = (Number(item.price) || 0) * (Number(item.qty) || 0);
 
-      return `
-        <div class="cart-item" data-index="${idx}">
-          <div>
-            <p class="cart-item-title">${title}</p>
-            ${opt ? `<p class="cart-item-meta">${opt}</p>` : ``}
-            <p class="cart-item-meta">${price} each</p>
+      const opts = item.options
+        ? Object.entries(item.options).map(([k, v]) => `<div style="font-size:12px; opacity:.75;">${k}: ${v}</div>`).join("")
+        : "";
+
+      const row = document.createElement("div");
+      row.className = "cart-row";
+      row.style.cssText = "padding:16px; border-bottom:1px solid #eee; display:flex; gap:12px; justify-content:space-between;";
+
+      row.innerHTML = `
+        <div style="flex:1;">
+          <div style="font-weight:600;">${item.name || "Item"}</div>
+          ${opts}
+          <div style="margin-top:6px; opacity:.8;">${money(item.price)} × ${item.qty}</div>
+        </div>
+
+        <div style="text-align:right; min-width:120px;">
+          <div style="font-weight:700;">${money(line)}</div>
+
+          <div style="margin-top:8px; display:flex; gap:8px; justify-content:flex-end; align-items:center;">
+            <button type="button" data-action="dec" data-idx="${idx}">−</button>
+            <span>${item.qty}</span>
+            <button type="button" data-action="inc" data-idx="${idx}">+</button>
           </div>
 
-          <div style="text-align:right;">
-            <div class="cart-item-actions">
-              <button type="button" class="cart-qty-btn" data-action="dec" aria-label="Decrease quantity">−</button>
-              <strong>${qty}</strong>
-              <button type="button" class="cart-qty-btn" data-action="inc" aria-label="Increase quantity">+</button>
-            </div>
-            <button type="button" class="cart-remove-btn" data-action="remove">Remove</button>
-          </div>
+          <button type="button" data-action="remove" data-idx="${idx}" style="margin-top:8px;">Remove</button>
         </div>
       `;
-    }).join("");
 
-    totalEl.textContent = money(calcTotal(cart));
-    updateBadge();
+      itemsWrap.appendChild(row);
+    });
+
+    const { total } = calc(cart);
+    totalEl.textContent = money(total);
+    updateBadge(cart);
   }
 
-  // --- Add to cart handler (delegated) ---
-  document.addEventListener("click", (e) => {
-    const addBtn = e.target.closest(".cart-button");
-    if (!addBtn) return;
-
-    const productId = addBtn.getAttribute("data-product-id") || "unknown";
-    const name = addBtn.getAttribute("data-name") || "Item";
-
-    const scopeSel = addBtn.getAttribute("data-options-scope");
-    const scope = scopeSel ? document.querySelector(scopeSel) : null;
-
-    // Read selected package from hidden input inside scope
-    let pkg = "";
-    if (scope) {
-      const pkgInput = scope.querySelector('input[name="package"]');
-      if (pkgInput) pkg = (pkgInput.value || "").trim();
-    }
-
-    if (!pkg) {
-      alert("Please pick a package first.");
-      return;
-    }
-
-    // Price lookup via data-price-map (based on package name)
-    let price = 0;
-    const priceMapRaw = addBtn.getAttribute("data-price-map");
-    if (priceMapRaw) {
-      try {
-        const map = JSON.parse(priceMapRaw);
-        price = Number(map[pkg]) || 0;
-      } catch {
-        price = 0;
-      }
-    }
-
-    if (!price) {
-      alert("Price not found for this package. Please refresh and try again.");
-      return;
-    }
-
+  // ---- cart mutations ----
+  function upsertItem(newItem) {
     const cart = readCart();
 
-    // Merge rule: same product + same package = increase qty
-    const existing = cart.find(x => x.productId === productId && x.package === pkg);
-    if (existing) {
-      existing.qty = (Number(existing.qty) || 1) + 1;
+    // merge rule: same product id + same options => increase qty
+    const key = (i) => JSON.stringify({ id: i.id, options: i.options || {} });
+    const existingIndex = cart.findIndex(i => key(i) === key(newItem));
+
+    if (existingIndex >= 0) {
+      cart[existingIndex].qty += newItem.qty;
     } else {
-      cart.push({
-        productId,
-        name,
-        package: pkg,
-        price,
-        qty: 1
-      });
+      cart.push(newItem);
     }
 
     writeCart(cart);
-    renderCart();
-    openCart(); // opens ONLY after add-to-cart (not on load)
-  });
+    render();
+  }
 
-  // Qty / remove buttons (inside cart)
-  itemsEl.addEventListener("click", (e) => {
-    const row = e.target.closest(".cart-item");
-    if (!row) return;
-
-    const idx = Number(row.getAttribute("data-index"));
-    const action = e.target.getAttribute("data-action");
-    if (!Number.isFinite(idx) || !action) return;
-
+  function changeQty(idx, delta) {
     const cart = readCart();
-    const item = cart[idx];
-    if (!item) return;
+    if (!cart[idx]) return;
 
-    if (action === "inc") {
-      item.qty = (Number(item.qty) || 1) + 1;
-    }
-
-    if (action === "dec") {
-      const next = (Number(item.qty) || 1) - 1;
-      item.qty = Math.max(1, next);
-    }
-
-    if (action === "remove") {
-      cart.splice(idx, 1);
-    }
+    cart[idx].qty = (Number(cart[idx].qty) || 0) + delta;
+    if (cart[idx].qty <= 0) cart.splice(idx, 1);
 
     writeCart(cart);
-    renderCart();
-  });
+    render();
+  }
 
-  // Open / close controls
-  if (openBtn) openBtn.addEventListener("click", () => { renderCart(); openCart(); });
-  if (closeBtn) closeBtn.addEventListener("click", closeCart);
+  function removeIdx(idx) {
+    const cart = readCart();
+    cart.splice(idx, 1);
+    writeCart(cart);
+    render();
+  }
+
+  // ---- option helpers (your "pick a package" logic) ----
+  function getSelectedOption(scopeEl, optionName) {
+    // expects: <input type="hidden" name="package" ... value="Classic Romance">
+    const hidden = qs(`input[name="${optionName}"]`, scopeEl);
+    if (hidden && hidden.value) return hidden.value.trim();
+
+    // fallback: selected pill
+    const pill = qs(`.option-grid[data-option-group="${optionName}"] .option-pill.is-selected`, scopeEl);
+    return pill ? pill.getAttribute("data-option-value") : "";
+  }
+
+  function getPriceFromMap(btn, selectedOptionValue) {
+    const mapRaw = btn.getAttribute("data-price-map") || "{}";
+    let map = {};
+    try { map = JSON.parse(mapRaw); } catch { map = {}; }
+    return Number(map[selectedOptionValue]) || 0;
+  }
+
+  function addToCartFromButton(btn) {
+    const name = btn.getAttribute("data-name") || "Item";
+    const id = btn.getAttribute("data-product-id") || name.toLowerCase().replace(/\s+/g, "-");
+
+    const scopeSel = btn.getAttribute("data-options-scope");
+    const scopeEl = scopeSel ? qs(scopeSel) : document;
+
+    const priceMode = btn.getAttribute("data-price-mode") || "fixed";
+
+    let options = {};
+    let price = 0;
+
+    if (priceMode === "lookup") {
+      const optionKey = btn.getAttribute("data-price-option") || "package";
+      const selected = getSelectedOption(scopeEl, optionKey);
+
+      if (!selected) {
+        alert("Please pick a package first.");
+        return;
+      }
+
+      options[optionKey] = selected;
+      price = getPriceFromMap(btn, selected);
+
+      const displaySel = btn.getAttribute("data-price-display");
+      if (displaySel) {
+        const displayEl = qs(displaySel);
+        if (displayEl) displayEl.textContent = money(price);
+      }
+    } else {
+      price = Number(btn.getAttribute("data-price") || 0);
+    }
+
+    upsertItem({ id, name, price, qty: 1, options });
+    openCart();
+  }
+
+  // ---- events ----
+  openBtn.addEventListener("click", openCart);
+  closeBtn.addEventListener("click", closeCart);
   overlay.addEventListener("click", closeCart);
 
   document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && drawer.classList.contains("is-open")) closeCart();
+    if (e.key === "Escape") closeCart();
   });
 
-  // Package pill selection handler (works for mobile+desktop scopes)
+  // add-to-cart buttons
   document.addEventListener("click", (e) => {
-    const pill = e.target.closest(".option-pill");
-    if (!pill) return;
-
-    const grid = pill.closest(".option-grid");
-    if (!grid) return;
-
-    // only within a product option box
-    const scope = pill.closest(".product-detail-btn-box");
-    if (!scope) return;
-
-    // toggle selected styling
-    grid.querySelectorAll(".option-pill").forEach(b => b.classList.remove("is-selected"));
-    pill.classList.add("is-selected");
-
-    const value = pill.getAttribute("data-option-value") || "";
-    const pkgInput = scope.querySelector('input[name="package"]');
-    if (pkgInput) pkgInput.value = value;
-
-    // update local displayed price if present
-    const priceMapRaw = scope.querySelector(".cart-button")?.getAttribute("data-price-map");
-    const priceDisplaySel = scope.querySelector(".cart-button")?.getAttribute("data-price-display");
-
-    if (priceMapRaw && priceDisplaySel) {
-      try {
-        const map = JSON.parse(priceMapRaw);
-        const p = Number(map[value]) || 0;
-        const priceEl = document.querySelector(priceDisplaySel);
-        if (priceEl) priceEl.textContent = money(p);
-      } catch {}
-    }
+    const btn = e.target.closest(".cart-button");
+    if (!btn) return;
+    addToCartFromButton(btn);
   });
 
-  // Init badge + render (does NOT open)
-  updateBadge();
-  renderCart();
+  // qty/remove inside cart
+  itemsWrap.addEventListener("click", (e) => {
+    const actionBtn = e.target.closest("button[data-action]");
+    if (!actionBtn) return;
+
+    const action = actionBtn.getAttribute("data-action");
+    const idx = Number(actionBtn.getAttribute("data-idx"));
+    if (Number.isNaN(idx)) return;
+
+    if (action === "inc") changeQty(idx, +1);
+    if (action === "dec") changeQty(idx, -1);
+    if (action === "remove") removeIdx(idx);
+  });
+
+  // initial paint
+  render();
 })();
