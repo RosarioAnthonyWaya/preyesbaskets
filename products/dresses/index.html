@@ -28,8 +28,7 @@ permalink: /products/dresses/
 </style>
 
 
-
-         <section class="product-detail2">
+ <section class="product-detail2">
             <div class="w-layout-blockcontainer container w-container">
                 <div class="w-layout-grid product-detail-griid">
                   
@@ -94,27 +93,28 @@ This box is perfect when you want to say “I thought of you” in a way that fe
 A solid Valentine’s choice for him — easy, classy, and appreciated.</p>
 
 
-<h4>What this box contains</h4>
-<ul>
-   <li>Ted Baker body spray set</li> 
-   <li>Baylis & Harding mini aftershave</li>
-   <li>Valentine’s card</li>
-   <li>Premium gift box & wrapping</li>
-</ul>
-<br>
-<div class="product-detail-btn-box" id="product-dress-1">
 
+<br>
+<!-- ========================================
+     MOBILE VERSION - Dress Product Button
+     ======================================== -->
+
+<div class="product-detail-btn-box" id="product-dress-mobile">
+  
+  <!-- Color Selection -->
   <div class="product-detail-option-group">
-    <div class="field-label">Colour</div>
+    <div class="field-label">Choose Color</div>
     <div class="option-grid" data-option-group="color">
-      <button type="button" class="option-pill" data-option-value="Red">Red</button>
-      <button type="button" class="option-pill" data-option-value="Green">Green</button>
       <button type="button" class="option-pill" data-option-value="Blue">Blue</button>
+      <button type="button" class="option-pill" data-option-value="Green">Green</button>
+      <button type="button" class="option-pill" data-option-value="Red">Red</button>
+      <button type="button" class="option-pill" data-option-value="Gold">Gold</button>
     </div>
   </div>
 
+  <!-- Size Selection -->
   <div class="product-detail-option-group">
-    <div class="field-label">Size</div>
+    <div class="field-label">Choose UK Size</div>
     <div class="option-grid" data-option-group="size">
       <button type="button" class="option-pill" data-option-value="UK 6">UK 6</button>
       <button type="button" class="option-pill" data-option-value="UK 8">UK 8</button>
@@ -122,18 +122,26 @@ A solid Valentine’s choice for him — easy, classy, and appreciated.</p>
       <button type="button" class="option-pill" data-option-value="UK 12">UK 12</button>
       <button type="button" class="option-pill" data-option-value="UK 14">UK 14</button>
       <button type="button" class="option-pill" data-option-value="UK 16">UK 16</button>
+      <button type="button" class="option-pill" data-option-value="UK 18">UK 18</button>
     </div>
   </div>
 
-  <!-- this gets filled by JS -->
-  <input type="hidden" class="selected-options" value="">
+  <!-- Price Display -->
+  <div class="price-row">
+    <span>Total:</span>
+    <strong id="dress-price-mobile">£70.00</strong>
+  </div>
 
+  <!-- Add to Cart Button -->
   <button
+    type="button"
     class="cart-button"
-    data-product-id="dress"
-    data-name="Dress"
-    data-price="0"
-    data-options-source="#product-dress-1"
+    data-product-id="elegant-dress"
+    data-name="Elegant Dress"
+    data-options-scope="#product-dress-mobile"
+    data-price-mode="fixed"
+    data-price="70"
+    data-price-display="#dress-price-mobile"
   >
     Add to Cart
   </button>
@@ -202,27 +210,31 @@ This box is perfect when you want to say “I thought of you” in a way that fe
 A solid Valentine’s choice for him — easy, classy, and appreciated.</p>
 
 
-<h4>What this box contains</h4>
-<ul>
-   <li>Ted Baker body spray set</li> 
-   <li>Baylis & Harding mini aftershave</li>
-   <li>Valentine’s card</li>
-   <li>Premium gift box & wrapping</li>
-</ul>
-<br>
-<div class="product-detail-btn-box" id="product-dress-1">
 
+<br>
+
+
+
+<!-- ========================================
+     DESKTOP VERSION - Dress Product Button
+     ======================================== -->
+
+<div class="product-detail-btn-box" id="product-dress-desktop">
+  
+  <!-- Color Selection -->
   <div class="product-detail-option-group">
-    <div class="field-label">Colour</div>
+    <div class="field-label">Choose Color</div>
     <div class="option-grid" data-option-group="color">
-      <button type="button" class="option-pill" data-option-value="Red">Red</button>
-      <button type="button" class="option-pill" data-option-value="Green">Green</button>
       <button type="button" class="option-pill" data-option-value="Blue">Blue</button>
+      <button type="button" class="option-pill" data-option-value="Green">Green</button>
+      <button type="button" class="option-pill" data-option-value="Red">Red</button>
+      <button type="button" class="option-pill" data-option-value="Gold">Gold</button>
     </div>
   </div>
 
+  <!-- Size Selection -->
   <div class="product-detail-option-group">
-    <div class="field-label">Size</div>
+    <div class="field-label">Choose UK Size</div>
     <div class="option-grid" data-option-group="size">
       <button type="button" class="option-pill" data-option-value="UK 6">UK 6</button>
       <button type="button" class="option-pill" data-option-value="UK 8">UK 8</button>
@@ -230,23 +242,73 @@ A solid Valentine’s choice for him — easy, classy, and appreciated.</p>
       <button type="button" class="option-pill" data-option-value="UK 12">UK 12</button>
       <button type="button" class="option-pill" data-option-value="UK 14">UK 14</button>
       <button type="button" class="option-pill" data-option-value="UK 16">UK 16</button>
+      <button type="button" class="option-pill" data-option-value="UK 18">UK 18</button>
     </div>
   </div>
 
-  <!-- this gets filled by JS -->
-  <input type="hidden" class="selected-options" value="">
+  <!-- Price Display -->
+  <div class="price-row">
+    <span>Total:</span>
+    <strong id="dress-price-desktop">£70.00</strong>
+  </div>
 
+  <!-- Add to Cart Button -->
   <button
+    type="button"
     class="cart-button"
-    data-product-id="dress"
-    data-name="Dress"
-    data-price="0"
-    data-options-source="#product-dress-1"
+    data-product-id="elegant-dress"
+    data-name="Elegant Dress"
+    data-options-scope="#product-dress-desktop"
+    data-price-mode="fixed"
+    data-price="70"
+    data-price-display="#dress-price-desktop"
   >
     Add to Cart
   </button>
 
 </div>
+
+
+<!-- ========================================
+     NOTES & EXPLANATION
+     ======================================== -->
+
+<!--
+  KEY DIFFERENCES FROM ROSES:
+  
+  1. FIXED PRICE (not lookup):
+     - data-price-mode="fixed"
+     - data-price="70"
+     - No data-price-map needed (all options cost the same)
+  
+  2. TWO REQUIRED OPTIONS:
+     - Color (Blue, Green, Red, Gold)
+     - Size (UK 6-18)
+     - Both are single-select (no data-multi attribute)
+  
+  3. PRICE DISPLAY:
+     - Shows £70.00 always (fixed price)
+     - Updates if you add add-ons in the future
+  
+  4. CART BEHAVIOR:
+     - Items with same color + size = merged quantity
+     - Items with different color or size = separate cart lines
+  
+  OPTIONAL ENHANCEMENTS:
+  
+  If you want to add optional add-ons later (like gift wrapping):
+  
+  <div class="product-detail-option-group">
+    <div class="field-label">Add-ons (optional)</div>
+    <div class="option-grid" data-option-group="addon" data-multi="true">
+      <button type="button" class="option-pill" data-option-value="Gift Wrap">+£5 – Gift Wrap</button>
+      <button type="button" class="option-pill" data-option-value="Express Delivery">+£10 – Express Delivery</button>
+    </div>
+  </div>
+  
+  Then add to the button:
+  data-addon-map='{"Gift Wrap":5,"Express Delivery":10}'
+-->
 
 
                       
@@ -265,30 +327,30 @@ A solid Valentine’s choice for him — easy, classy, and appreciated.</p>
                     <p class="section-text">
                        Little upgrades that make the gift feel even more personal — add them to any box at checkout.</p>
                 </div>
-                <div data-delay="4000" data-animation="slide" class="featured-slider w-slider" data-autoplay="false" data-easing="ease" data-hide-arrows="false" data-disable-swipe="false" data-autoplay-limit="0" data-nav-spacing="3" data-duration="500" data-infinite="true" role="region" aria-label="carousel">
+               <div data-delay="4000" data-animation="slide" class="featured-slider w-slider" data-autoplay="false" data-easing="ease" data-hide-arrows="false" data-disable-swipe="false" data-autoplay-limit="0" data-nav-spacing="3" data-duration="500" data-infinite="true" role="region" aria-label="carousel">
                     <div class="featured-mask2 w-slider-mask" id="w-slider-mask-0">
-                        <div class="featured-slide w-slide" aria-label="1 of 5" role="group" style="transition: all; transform: translateX(0px); opacity: 1;">
-                            <div class="featured-block">
-                                <div class="bg featured-overlay"></div>
-                                <div class="featured-image-box">
-                                    <img src="https://i.ibb.co/dwytyQJn/carter-baran-75-Ig-Lbgq-Rls-unsplash.jpg" loading="lazy" alt="" class="featured-image3">
+               <div class="featured-slide w-slide" aria-label="1 of 5" role="group" aria-hidden="true" style="transition: all; transform: translateX(0px); opacity: 1;">
+                            <div class="featured-block" aria-hidden="true">
+                                <div class="bg featured-overlay" aria-hidden="true"></div>
+                                <div class="featured-image-box" aria-hidden="true">
+                                    <img src="https://i.ibb.co/qYx1SbX6/download-99.jpg" loading="lazy" alt="" class="featured-image3" aria-hidden="true">
                                 </div>
-                                <div class="featured-content-box">
-                                    <h3 class="featured-title">Teddy bears</h3>
-                                    <p class="featured-text">
-                                            </p>
-                                    <a href="/money-bouquet" data-w-id="0559b378-fa75-e2d0-595e-3a29076f8709" class="theme-button dark w-inline-block">
-                                        <div class="theme-btn-bg light" style="width: 40px;"></div>
-                                        <div class="theme-btn-icon-box"><img loading="lazy" src="https://cdn.prod.website-files.com/68d40147877fa1b7a07fd6b5/68d5955edd4f4797399a9f8d_svgviewer-output%20(4).svg" alt="" class="theme-btn-icon" style="transform: translate3d(0%, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg); transform-style: preserve-3d;"><img loading="lazy" src="https://cdn.prod.website-files.com/68d40147877fa1b7a07fd6b5/68d5955edd4f4797399a9f8d_svgviewer-output%20(4).svg" alt="" class="theme-btn-hover-icon" style="transform: translate3d(-150%, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg); transform-style: preserve-3d;"></div>
-                                        <div class="theme-btn-text-box">
-                                            <div class="theme-btn-text" style="transform: translate3d(0px, 0%, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg); transform-style: preserve-3d;">Get it now</div>
-                                            <div class="theme-btn-hover-text" style="transform: translate3d(0px, 100%, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg); transform-style: preserve-3d;">Get it now</div>
+                                <div class="featured-content-box" aria-hidden="true">
+                                    <h3 class="featured-title" aria-hidden="true">Pair of Dressing Shoes </h3>
+                                    <p class="featured-text" aria-hidden="true">
+                                        </p>
+                                        <a href="/products/dress-shoes" data-w-id="0559b378-fa75-e2d0-595e-3a29076f8709" class="theme-button dark w-inline-block" tabindex="-1" aria-hidden="true">
+                                        <div class="theme-btn-bg light" style="width: 40px;" aria-hidden="true"></div>
+                                        <div class="theme-btn-icon-box" aria-hidden="true"><img loading="lazy" src="https://cdn.prod.website-files.com/68d40147877fa1b7a07fd6b5/68d5955edd4f4797399a9f8d_svgviewer-output%20(4).svg" alt="" class="theme-btn-icon" style="transform: translate3d(0%, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg); transform-style: preserve-3d;" aria-hidden="true"><img loading="lazy" src="https://cdn.prod.website-files.com/68d40147877fa1b7a07fd6b5/68d5955edd4f4797399a9f8d_svgviewer-output%20(4).svg" alt="" class="theme-btn-hover-icon" style="transform: translate3d(-150%, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg); transform-style: preserve-3d;" aria-hidden="true"></div>
+                                        <div class="theme-btn-text-box" aria-hidden="true">
+                                            <div class="theme-btn-text" style="transform: translate3d(0px, 0%, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg); transform-style: preserve-3d;" aria-hidden="true">Get it now</div>
+                                            <div class="theme-btn-hover-text" style="transform: translate3d(0px, 100%, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg); transform-style: preserve-3d;" aria-hidden="true">Get it now</div>
                                         </div>
                                     </a>
                                 </div>
-
                             </div>
                         </div>
+               
                         <div class="featured-slide w-slide" aria-label="2 of 5" role="group" aria-hidden="true" style="transition: all; transform: translateX(0px); opacity: 1;">
                             <div class="featured-block" aria-hidden="true">
                                 <div class="bg featured-overlay" aria-hidden="true"></div>
@@ -296,7 +358,7 @@ A solid Valentine’s choice for him — easy, classy, and appreciated.</p>
                                     <img src="https://i.ibb.co/n8wPvnwN/download-97.jpg" loading="lazy" alt="" class="featured-image3" aria-hidden="true">
                                 </div>
                                 <div class="featured-content-box" aria-hidden="true">
-                                    <h3 class="featured-title" aria-hidden="true">Box of chocolates</h3>
+                                    <h3 class="featured-title" aria-hidden="true">Box of Roses and chocolates</h3>
                                     <p class="featured-text" aria-hidden="true">
                                          </p>
                                     <a href="/products/roses" data-w-id="0559b378-fa75-e2d0-595e-3a29076f8709" class="theme-button dark w-inline-block" tabindex="-1" aria-hidden="true">
@@ -314,13 +376,13 @@ A solid Valentine’s choice for him — easy, classy, and appreciated.</p>
                             <div class="featured-block" aria-hidden="true">
                                 <div class="bg featured-overlay" aria-hidden="true"></div>
                                 <div class="featured-image-box" aria-hidden="true">
-                                    <img src="https://i.ibb.co/RkWM9dVz/download-98.jpg" loading="lazy" alt="" class="featured-image3" aria-hidden="true">
+                                    <img src="https://cdn.mos.cms.futurecdn.net/VzUqgr8pfbNcfXrpzeVBPE-1920-80.jpg.webp" loading="lazy" alt="" class="featured-image3" aria-hidden="true">
                                 </div>
                                 <div class="featured-content-box" aria-hidden="true">
-                                    <h3 class="featured-title" aria-hidden="true">Evening Dress </h3>
+                                    <h3 class="featured-title" aria-hidden="true">Cologne</h3>
                                     <p class="featured-text" aria-hidden="true">
                                            </p>
-                                    <a href="/products/dresses" data-w-id="0559b378-fa75-e2d0-595e-3a29076f8709" class="theme-button dark w-inline-block" tabindex="-1" aria-hidden="true">
+                                    <a href="/products/cologne" data-w-id="0559b378-fa75-e2d0-595e-3a29076f8709" class="theme-button dark w-inline-block" tabindex="-1" aria-hidden="true">
                                         <div class="theme-btn-bg light" style="width: 40px;" aria-hidden="true"></div>
                                         <div class="theme-btn-icon-box" aria-hidden="true"><img loading="lazy" src="https://cdn.prod.website-files.com/68d40147877fa1b7a07fd6b5/68d5955edd4f4797399a9f8d_svgviewer-output%20(4).svg" alt="" class="theme-btn-icon" style="transform: translate3d(0%, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg); transform-style: preserve-3d;" aria-hidden="true"><img loading="lazy" src="https://cdn.prod.website-files.com/68d40147877fa1b7a07fd6b5/68d5955edd4f4797399a9f8d_svgviewer-output%20(4).svg" alt="" class="theme-btn-hover-icon" style="transform: translate3d(-150%, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg); transform-style: preserve-3d;" aria-hidden="true"></div>
                                         <div class="theme-btn-text-box" aria-hidden="true">
@@ -351,25 +413,27 @@ A solid Valentine’s choice for him — easy, classy, and appreciated.</p>
                                 </div>
                             </div>
                         </div>
-                        <div class="featured-slide w-slide" aria-label="5 of 5" role="group" aria-hidden="true" style="transition: all; transform: translateX(0px); opacity: 1;">
-                            <div class="featured-block" aria-hidden="true">
-                                <div class="bg featured-overlay" aria-hidden="true"></div>
-                                <div class="featured-image-box" aria-hidden="true">
-                                    <img src="https://i.ibb.co/qYx1SbX6/download-99.jpg" loading="lazy" alt="" class="featured-image3" aria-hidden="true">
+                    
+                        <div class="featured-slide w-slide" aria-label="5 of 5" role="group" style="transition: all; transform: translateX(0px); opacity: 1;">
+                            <div class="featured-block">
+                                <div class="bg featured-overlay"></div>
+                                <div class="featured-image-box">
+                                    <img src="https://i.ibb.co/dwytyQJn/carter-baran-75-Ig-Lbgq-Rls-unsplash.jpg" loading="lazy" alt="" class="featured-image3">
                                 </div>
-                                <div class="featured-content-box" aria-hidden="true">
-                                    <h3 class="featured-title" aria-hidden="true">Pair of Dressing Shoes </h3>
-                                    <p class="featured-text" aria-hidden="true">
-                                        </p>
-                                        <a href="/products/dress-shoes" data-w-id="0559b378-fa75-e2d0-595e-3a29076f8709" class="theme-button dark w-inline-block" tabindex="-1" aria-hidden="true">
-                                        <div class="theme-btn-bg light" style="width: 40px;" aria-hidden="true"></div>
-                                        <div class="theme-btn-icon-box" aria-hidden="true"><img loading="lazy" src="https://cdn.prod.website-files.com/68d40147877fa1b7a07fd6b5/68d5955edd4f4797399a9f8d_svgviewer-output%20(4).svg" alt="" class="theme-btn-icon" style="transform: translate3d(0%, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg); transform-style: preserve-3d;" aria-hidden="true"><img loading="lazy" src="https://cdn.prod.website-files.com/68d40147877fa1b7a07fd6b5/68d5955edd4f4797399a9f8d_svgviewer-output%20(4).svg" alt="" class="theme-btn-hover-icon" style="transform: translate3d(-150%, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg); transform-style: preserve-3d;" aria-hidden="true"></div>
-                                        <div class="theme-btn-text-box" aria-hidden="true">
-                                            <div class="theme-btn-text" style="transform: translate3d(0px, 0%, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg); transform-style: preserve-3d;" aria-hidden="true">Get it now</div>
-                                            <div class="theme-btn-hover-text" style="transform: translate3d(0px, 100%, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg); transform-style: preserve-3d;" aria-hidden="true">Get it now</div>
+                                <div class="featured-content-box">
+                                    <h3 class="featured-title">Teddy bears</h3>
+                                    <p class="featured-text">
+                                            </p>
+                                    <a href="/product/teddy-bears" data-w-id="0559b378-fa75-e2d0-595e-3a29076f8709" class="theme-button dark w-inline-block">
+                                        <div class="theme-btn-bg light" style="width: 40px;"></div>
+                                        <div class="theme-btn-icon-box"><img loading="lazy" src="https://cdn.prod.website-files.com/68d40147877fa1b7a07fd6b5/68d5955edd4f4797399a9f8d_svgviewer-output%20(4).svg" alt="" class="theme-btn-icon" style="transform: translate3d(0%, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg); transform-style: preserve-3d;"><img loading="lazy" src="https://cdn.prod.website-files.com/68d40147877fa1b7a07fd6b5/68d5955edd4f4797399a9f8d_svgviewer-output%20(4).svg" alt="" class="theme-btn-hover-icon" style="transform: translate3d(-150%, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg); transform-style: preserve-3d;"></div>
+                                        <div class="theme-btn-text-box">
+                                            <div class="theme-btn-text" style="transform: translate3d(0px, 0%, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg); transform-style: preserve-3d;">Get it now</div>
+                                            <div class="theme-btn-hover-text" style="transform: translate3d(0px, 100%, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg); transform-style: preserve-3d;">Get it now</div>
                                         </div>
                                     </a>
                                 </div>
+
                             </div>
                         </div>
                         <div aria-live="off" aria-atomic="true" class="w-slider-aria-label" data-wf-ignore=""></div>
