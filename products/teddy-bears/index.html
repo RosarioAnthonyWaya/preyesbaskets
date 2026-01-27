@@ -5,8 +5,7 @@ description: "teddy bears curated with love — from £20, delivered across the 
 permalink: /products/teddy-bears/
 ---
 
-
-<style>
+style>
   /* Default: desktop + tablet */
   .show-desktop-tablet { display: block; }
   .show-mobile { display: none; }
@@ -81,25 +80,55 @@ This teddy bear is perfect when you want to say “I love you" in a way that fee
 A solid Valentine’s choice for her — easy, classy, and appreciated.</p>
 
 <br>
-<div class="product-detail-btn-box" id="product-teddy-1">
+<!-- ========================================
+     MOBILE VERSION - Teddy Bear
+     ======================================== -->
 
+<div class="product-detail-btn-box" id="product-teddy-mobile">
+
+  <!-- Size Selection (priced) -->
   <div class="product-detail-option-group">
-    <div class="field-label">Size</div>
-    <div class="option-grid" data-option-group="size">
+    <div class="field-label">Choose Size</div>
+
+    <!-- price map: option value -> price -->
+    <div
+      class="option-grid"
+      data-option-group="size"
+      data-required="true"
+      data-price-map='{"Mini":10,"Medium":20,"Large":40}'
+    >
       <button type="button" class="option-pill" data-option-value="Mini">Mini</button>
       <button type="button" class="option-pill" data-option-value="Medium">Medium</button>
       <button type="button" class="option-pill" data-option-value="Large">Large</button>
     </div>
   </div>
 
-  <input type="hidden" class="selected-options" value="">
+  <!-- Color (optional) -->
+  <div class="product-detail-option-group">
+    <div class="field-label">Choose Color (Optional)</div>
+    <div class="option-grid" data-option-group="color" data-required="false">
+      <button type="button" class="option-pill" data-option-value="Brown">Brown</button>
+      <button type="button" class="option-pill" data-option-value="Cream">Cream</button>
+      <button type="button" class="option-pill" data-option-value="White">White</button>
+    </div>
+  </div>
 
+  <!-- Price Display -->
+  <div class="price-row">
+    <span>Total:</span>
+    <strong id="teddy-price-mobile">£0.00</strong>
+  </div>
+
+  <!-- Add to Cart Button -->
   <button
+    type="button"
     class="cart-button"
     data-product-id="teddy-bear"
     data-name="Teddy Bear"
+    data-options-scope="#product-teddy-mobile"
+    data-price-mode="priceMap"
     data-price="0"
-    data-options-source="#product-teddy-1"
+    data-price-display="#teddy-price-mobile"
   >
     Add to Cart
   </button>
@@ -107,10 +136,61 @@ A solid Valentine’s choice for her — easy, classy, and appreciated.</p>
 </div>
 
 
+<!-- ========================================
+     DESKTOP VERSION - Teddy Bear
+     ======================================== -->
 
+<div class="product-detail-btn-box" id="product-teddy-desktop">
 
-                      
-                    </div>
+  <!-- Size Selection (priced) -->
+  <div class="product-detail-option-group">
+    <div class="field-label">Choose Size</div>
+
+    <div
+      class="option-grid"
+      data-option-group="size"
+      data-required="true"
+      data-price-map='{"Mini":10,"Medium":20,"Large":40}'
+    >
+      <button type="button" class="option-pill" data-option-value="Mini">Mini</button>
+      <button type="button" class="option-pill" data-option-value="Medium">Medium</button>
+      <button type="button" class="option-pill" data-option-value="Large">Large</button>
+    </div>
+  </div>
+
+  <!-- Color (optional) -->
+  <div class="product-detail-option-group">
+    <div class="field-label">Choose Color (Optional)</div>
+    <div class="option-grid" data-option-group="color" data-required="false">
+      <button type="button" class="option-pill" data-option-value="Brown">Brown</button>
+      <button type="button" class="option-pill" data-option-value="Cream">Cream</button>
+      <button type="button" class="option-pill" data-option-value="White">White</button>
+    </div>
+  </div>
+
+  <!-- Price Display -->
+  <div class="price-row">
+    <span>Total:</span>
+    <strong id="teddy-price-desktop">£0.00</strong>
+  </div>
+
+  <!-- Add to Cart Button -->
+  <button
+    type="button"
+    class="cart-button"
+    data-product-id="teddy-bear"
+    data-name="Teddy Bear"
+    data-options-scope="#product-teddy-desktop"
+    data-price-mode="priceMap"
+    data-price="0"
+    data-price-display="#teddy-price-desktop"
+  >
+    Add to Cart
+  </button>
+
+</div>
+
+                       </div>
 
                     <div class="product-detail-image-column show-desktop-tablet">
                        <div data-w-id="ad94eddc-83c5-8cfd-991f-c0bd6380befe" style="opacity: 1; transform: translate3d(0px, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg); transform-style: preserve-3d;" class="deal-right-box">
@@ -157,31 +237,60 @@ A solid Valentine’s choice for her — easy, classy, and appreciated.</p>
 
 
 <br>
-<div class="product-detail-btn-box" id="product-teddy-1">
 
+<!-- ========================================
+     DESKTOP VERSION - Teddy Bear
+     ======================================== -->
+
+<div class="product-detail-btn-box" id="product-teddy-desktop">
+
+  <!-- Size Selection (priced) -->
   <div class="product-detail-option-group">
-    <div class="field-label">Size</div>
-    <div class="option-grid" data-option-group="size">
+    <div class="field-label">Choose Size</div>
+
+    <div
+      class="option-grid"
+      data-option-group="size"
+      data-required="true"
+      data-price-map='{"Mini":10,"Medium":20,"Large":40}'
+    >
       <button type="button" class="option-pill" data-option-value="Mini">Mini</button>
       <button type="button" class="option-pill" data-option-value="Medium">Medium</button>
       <button type="button" class="option-pill" data-option-value="Large">Large</button>
     </div>
   </div>
 
-  <input type="hidden" class="selected-options" value="">
+  <!-- Color (optional) -->
+  <div class="product-detail-option-group">
+    <div class="field-label">Choose Color (Optional)</div>
+    <div class="option-grid" data-option-group="color" data-required="false">
+      <button type="button" class="option-pill" data-option-value="Brown">Brown</button>
+      <button type="button" class="option-pill" data-option-value="Cream">Cream</button>
+      <button type="button" class="option-pill" data-option-value="White">White</button>
+    </div>
+  </div>
 
+  <!-- Price Display -->
+  <div class="price-row">
+    <span>Total:</span>
+    <strong id="teddy-price-desktop">£0.00</strong>
+  </div>
+
+  <!-- Add to Cart Button -->
   <button
+    type="button"
     class="cart-button"
     data-product-id="teddy-bear"
     data-name="Teddy Bear"
+    data-options-scope="#product-teddy-desktop"
+    data-price-mode="priceMap"
     data-price="0"
-    data-options-source="#product-teddy-1"
+    data-price-display="#teddy-price-desktop"
   >
     Add to Cart
   </button>
 
 </div>
-
 
 
 
@@ -361,4 +470,3 @@ A solid Valentine’s choice for her — easy, classy, and appreciated.</p>
                 </div>
             </div>
         </section>
-        
