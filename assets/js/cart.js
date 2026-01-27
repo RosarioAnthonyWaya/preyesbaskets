@@ -1,337 +1,279 @@
+/* /assets/js/cart.js */
 (function () {
   const CART_KEY = "preyes_cart_v1";
 
-  function safeJSONParse(str, fallback) {
-    try { return JSON.parse(str); } catch { return fallback; }
+  // ===== Helpers =====
+  const money = (n) => `£${Number(n || 0).toFixed(2)}`;
+  const qs = (sel, root = document) => root.querySelector(sel);
+  const qsa = (sel, root = document) => Array.from(root.querySelectorAll(sel));
+
+  function loadCart() {
+    try {
+      return JSON.parse(localStorage.getItem(CART_KEY)) || [];
+    } catch {
+      return [];
+    }
   }
 
-  function getCart() {
-    return safeJSONParse(localStorage.getItem(CART_KEY) || "[]", []);
-  }
-
-  function setCart(cart) {
+  function saveCart(cart) {
     localStorage.setItem(CART_KEY, JSON.stringify(cart));
   }
 
-  function money(n) {
-    n = Number(n || 0);
-    return `£${n.toFixed(2)}`;
-  }
-
-  // ----------------------------
-  // COUNT UI
-  // ----------------------------
-  function updateCartCountUI() {
-    const cart = getCart();
-    const count = cart.reduce((sum, item) => sum + Number(item.qty || 0), 0);
-
-    const navCount = document.getElementById("nav-cart-count");
-    if (navCount) navCount.textContent = String(count);
-
-    document.querySelectorAll("[data-cart-count]").forEach((el) => {
-      el.textContent = String(count);
-    });
-  }
-
-  // ----------------------------
-  // DRAWER UI
-  // ----------------------------
-  const drawer = () => document.getElementById("cart-drawer");
-  const overlay = () => document.getElementById("cart-overlay");
-  const itemsBox = () => document.getElementById("cart-items");
-  const totalEl = () => document.getElementById("cart-total");
-
-  function openCart() {
-    const d = drawer();
-    const o = overlay();
-    if (!d || !o) return;
-
-    o.hidden = false;
-    d.classList.add("is-open");
-    d.setAttribute("aria-hidden", "false");
-    renderCart();
-  }
-
-  function closeCart() {
-    const d = drawer();
-    const o = overlay();
-    if (!d || !o) return;
-
-    d.classList.remove("is-open");
-    d.setAttribute("aria-hidden", "true");
-    o.hidden = true;
+  function cartCount(cart) {
+    return cart.reduce((sum, item) => sum + (item.qty || 0), 0);
   }
 
   function cartTotal(cart) {
-    return cart.reduce((sum, item) => sum + Number(item.price || 0) * Number(item.qty || 0), 0);
+    return cart.reduce((sum, item) => sum + (item.qty || 0) * (item.price || 0), 0);
   }
 
-  function optionSummary(options) {
-    if (!options) return "";
-    const parts = [];
-    Object.keys(options).forEach((k) => {
-      if (k === "card_message") return;
-      parts.push(`${k}: ${options[k]}`);
-    });
-    return parts.join(" • ");
+  // ===== Drawer Elements =====
+  const drawer = qs("#cart-drawer");
+  const overlay = qs("#cart-overlay");
+  const openBtn = qs("#cart-open-button");
+  const closeBtn = qs("#cart-close-button");
+  const navCount = qs("#nav-cart-count");
+  const itemsEl = qs("#cart-items");
+  const totalEl = qs("#cart-total");
+
+  // If drawer markup isn’t on the page, don’t crash
+  if (!drawer || !overlay) {
+    // Still update count if possible
+    const cart = loadCart();
+    if (navCount) navCount.textContent = String(cartCount(cart));
+    return;
   }
 
+  function isOpen() {
+    return drawer.classList.contains("is-open");
+  }
+
+  function openCart() {
+    drawer.classList.add("is-open");
+    drawer.setAttribute("aria-hidden", "false");
+    overlay.hidden = false;
+    overlay.classList.add("is-open");
+    document.documentElement.classList.add("cart-lock");
+  }
+
+  function closeCart() {
+    drawer.classList.remove("is-open");
+    drawer.setAttribute("aria-hidden", "true");
+    overlay.classList.remove("is-open");
+    overlay.hidden = true;
+    document.documentElement.classList.remove("cart-lock");
+  }
+
+  // ===== Render =====
   function renderCart() {
-    const box = itemsBox();
-    const tEl = totalEl();
-    if (!box || !tEl) return;
+    const cart = loadCart();
 
-    const cart = getCart();
+    if (navCount) navCount.textContent = String(cartCount(cart));
+    if (totalEl) totalEl.textContent = money(cartTotal(cart));
 
-    if (!cart.length) {
-      box.innerHTML = `<p style="color:#666;margin:8px 0;">Your cart is empty.</p>`;
-      tEl.textContent = money(0);
-      updateCartCountUI();
+    if (!itemsEl) return;
+
+    if (cart.length === 0) {
+      itemsEl.innerHTML = `<p>Your cart is empty.</p>`;
       return;
     }
 
-    box.innerHTML = cart.map((item, idx) => {
-      const meta = optionSummary(item.options);
-      const msg = item.options?.card_message ? `Message: ${item.options.card_message}` : "";
-      return `
-        <div class="cart-item" data-index="${idx}">
-          <div class="cart-item-main">
-            <p class="cart-item-title">${item.name}</p>
-            ${meta ? `<p class="cart-item-meta">${meta}</p>` : ""}
-            ${msg ? `<p class="cart-item-meta">${msg}</p>` : ""}
+    itemsEl.innerHTML = cart
+      .map((item, idx) => {
+        const optText = item.options
+          ? Object.entries(item.options)
+              .map(([k, v]) => `<div class="cart-opt"><small>${k}: ${v}</small></div>`)
+              .join("")
+          : "";
 
-            <div class="cart-item-actions">
-              <button class="qty-btn" type="button" data-action="dec">−</button>
-              <span><strong>${item.qty}</strong></span>
-              <button class="qty-btn" type="button" data-action="inc">+</button>
-              <span style="margin-left:10px;">${money(item.price)}</span>
-              <button class="remove-btn" type="button" data-action="remove">Remove</button>
+        return `
+          <div class="cart-item" data-index="${idx}">
+            <div class="cart-item-main">
+              <strong>${item.name}</strong>
+              ${optText}
+              <div class="cart-item-row">
+                <span>${money(item.price)}</span>
+                <div class="cart-qty">
+                  <button type="button" class="qty-minus" aria-label="Decrease">−</button>
+                  <span class="qty-val">${item.qty}</span>
+                  <button type="button" class="qty-plus" aria-label="Increase">+</button>
+                </div>
+              </div>
             </div>
+            <button type="button" class="cart-remove" aria-label="Remove">Remove</button>
           </div>
-        </div>
-      `;
-    }).join("");
-
-    tEl.textContent = money(cartTotal(cart));
-    updateCartCountUI();
+        `;
+      })
+      .join("");
   }
 
-  function mutateItem(index, action) {
-    const cart = getCart();
-    const i = Number(index);
-
-    if (!cart[i]) return;
-
-    if (action === "inc") cart[i].qty = Number(cart[i].qty || 0) + 1;
-    if (action === "dec") cart[i].qty = Math.max(1, Number(cart[i].qty || 0) - 1);
-    if (action === "remove") cart.splice(i, 1);
-
-    setCart(cart);
-    updateCartCountUI();
-    renderCart();
-    window.dispatchEvent(new Event("cart:updated"));
-  }
-
-  // ----------------------------
-  // OPTIONS + PRICE (product page)
-  // ----------------------------
-  function readOptions(scopeEl) {
-    const options = {};
-
-    scopeEl.querySelectorAll(".option-grid[data-option-group]").forEach((grid) => {
-      const groupName = grid.getAttribute("data-option-group");
-      const selected = grid.querySelector(".option-pill.is-selected");
-      if (groupName && selected) {
-        options[groupName] = selected.getAttribute("data-option-value") || selected.textContent.trim();
-      }
-    });
-
-    scopeEl.querySelectorAll('input[type="hidden"][name]').forEach((inp) => {
-      if (inp.value && !options[inp.name]) options[inp.name] = inp.value;
-    });
-
-    const msg = scopeEl.querySelector('textarea[name="card_message"]');
-    if (msg && msg.value.trim()) options.card_message = msg.value.trim();
-
-    return options;
+  // ===== Option reading =====
+  function getSelectedOption(scopeEl, groupName) {
+    const grid = qs(`.option-grid[data-option-group="${groupName}"]`, scopeEl);
+    if (!grid) return "";
+    const selected = qs(".option-pill.is-selected", grid);
+    return selected ? selected.getAttribute("data-option-value") || "" : "";
   }
 
   function requireOption(scopeEl, groupName) {
-    const grid = scopeEl.querySelector(`.option-grid[data-option-group="${groupName}"]`);
-    if (!grid) return true;
-    return !!grid.querySelector(".option-pill.is-selected");
+    const v = getSelectedOption(scopeEl, groupName);
+    return v && v.trim().length > 0;
   }
 
-  function getPriceFromButton(btn, scopeEl) {
-    const mode = btn.getAttribute("data-price-mode");
-    if (mode === "fixed") return Number(btn.getAttribute("data-price") || 0);
-
-    if (mode === "lookup") {
-      const optionGroup = btn.getAttribute("data-price-option");
-      const mapRaw = btn.getAttribute("data-price-map") || "{}";
-      const priceMap = safeJSONParse(mapRaw, {});
-      const options = readOptions(scopeEl);
-      const selectedVal = options[optionGroup];
-      return Number(priceMap[selectedVal] || 0);
+  function getPriceFromMap(btn, selectedValue) {
+    const mapRaw = btn.getAttribute("data-price-map");
+    if (!mapRaw) return 0;
+    let map;
+    try {
+      map = JSON.parse(mapRaw);
+    } catch {
+      return 0;
     }
-    return 0;
+    return Number(map[selectedValue] || 0);
   }
 
-  function updatePriceDisplay(btn) {
-    const scopeSelector = btn.getAttribute("data-options-scope");
-    const displaySelector = btn.getAttribute("data-price-display");
-    if (!scopeSelector || !displaySelector) return;
+  // ===== Add to cart =====
+  function addToCart(payload) {
+    const cart = loadCart();
 
-    const scopeEl = document.querySelector(scopeSelector);
-    if (!scopeEl) return;
+    // “same line item” merge rule: same id + same options => increase qty
+    const key = JSON.stringify({ id: payload.id, options: payload.options || {} });
+    const existing = cart.find((x) => JSON.stringify({ id: x.id, options: x.options || {} }) === key);
 
-    const price = getPriceFromButton(btn, scopeEl);
-    const priceEl = document.querySelector(displaySelector);
-    if (priceEl) priceEl.textContent = money(price);
+    if (existing) {
+      existing.qty += payload.qty || 1;
+    } else {
+      cart.push({
+        id: payload.id,
+        name: payload.name,
+        price: payload.price,
+        qty: payload.qty || 1,
+        options: payload.options || {}
+      });
+    }
+
+    saveCart(cart);
+    renderCart();
+    openCart(); // open only AFTER add
   }
 
-  function addToCart(btn) {
-    const scopeSelector = btn.getAttribute("data-options-scope");
-    const scopeEl = scopeSelector ? document.querySelector(scopeSelector) : null;
+  // ===== EVENTS =====
+
+  // Open cart on nav button click
+  if (openBtn) {
+    openBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      renderCart();
+      openCart();
+    });
+  }
+
+  // Close cart
+  if (closeBtn) closeBtn.addEventListener("click", closeCart);
+  overlay.addEventListener("click", closeCart);
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && isOpen()) closeCart();
+  });
+
+  // Option pill selection (adds .is-selected and updates price display)
+  document.addEventListener("click", (e) => {
+    const pill = e.target.closest(".option-pill");
+    if (!pill) return;
+
+    const grid = pill.closest(".option-grid");
+    if (!grid) return;
+
+    // Toggle selected state within this grid
+    qsa(".option-pill", grid).forEach((b) => b.classList.remove("is-selected"));
+    pill.classList.add("is-selected");
+
+    // Update price display if there is an add-to-cart button in the same scope
+    const scope = pill.closest(".product-detail-btn-box") || document;
+    const btn = qs(".cart-button[data-price-mode='lookup']", scope);
+    if (!btn) return;
+
+    const displaySel = btn.getAttribute("data-price-display");
+    const displayEl = displaySel ? qs(displaySel) : null;
+
+    const optionName = btn.getAttribute("data-price-option") || "package";
+    const selectedVal = getSelectedOption(scope, optionName);
+    const price = getPriceFromMap(btn, selectedVal);
+
+    if (displayEl) displayEl.textContent = money(price);
+  });
+
+  // Add to cart click
+  document.addEventListener("click", (e) => {
+    const btn = e.target.closest(".cart-button");
+    if (!btn) return;
+
+    const scopeSel = btn.getAttribute("data-options-scope");
+    const scopeEl = scopeSel ? qs(scopeSel) : btn.closest(".product-detail-btn-box");
 
     if (!scopeEl) {
       alert("Cart error: options scope not found.");
       return;
     }
 
-    // required
-    if (!requireOption(scopeEl, "package")) {
+    // Require package selection if package option grid exists in scope
+    const hasPackageGrid = qs(`.option-grid[data-option-group="package"]`, scopeEl);
+    if (hasPackageGrid && !requireOption(scopeEl, "package")) {
       alert("Please pick a package first.");
       return;
     }
 
     const id = btn.getAttribute("data-product-id") || "unknown";
-    const name = btn.getAttribute("data-name") || "Product";
-    const options = readOptions(scopeEl);
+    const name = btn.getAttribute("data-name") || "Item";
 
-    const price = getPriceFromButton(btn, scopeEl);
-    if (!price || price <= 0) {
-      alert("Please pick a package first.");
-      return;
-    }
+    const selectedPackage = hasPackageGrid ? getSelectedOption(scopeEl, "package") : "";
+    const price =
+      btn.getAttribute("data-price-mode") === "lookup"
+        ? getPriceFromMap(btn, selectedPackage)
+        : Number(btn.getAttribute("data-price") || 0);
 
-    const cart = getCart();
-    const signature = JSON.stringify({ id, options });
+    const options = {};
+    if (selectedPackage) options.package = selectedPackage;
 
-    const existingIndex = cart.findIndex((item) =>
-      JSON.stringify({ id: item.id, options: item.options }) === signature
-    );
+    // Card message (optional)
+    const msg = qs('textarea[name="card_message"]', scopeEl);
+    if (msg && msg.value.trim()) options.card_message = msg.value.trim();
 
-    if (existingIndex > -1) {
-      cart[existingIndex].qty = Number(cart[existingIndex].qty || 0) + 1;
-    } else {
-      cart.push({ id, name, price, qty: 1, options });
-    }
+    addToCart({ id, name, price, qty: 1, options });
+  });
 
-    setCart(cart);
-    updateCartCountUI();
-    window.dispatchEvent(new Event("cart:updated"));
-
-    // feedback
-    const original = btn.textContent;
-    btn.textContent = "Added ✓";
-    btn.disabled = true;
-    setTimeout(() => {
-      btn.textContent = original;
-      btn.disabled = false;
-    }, 800);
-
-    // open cart so user sees movement
-    openCart();
-  }
-
-  function handleOptionClick(e) {
-    const pill = e.target.closest(".option-pill");
-    if (!pill) return;
-
-    const grid = pill.closest(".option-grid[data-option-group]");
-    if (!grid) return;
-
-    grid.querySelectorAll(".option-pill").forEach((b) => b.classList.remove("is-selected"));
-    pill.classList.add("is-selected");
-
-    const groupName = grid.getAttribute("data-option-group");
-    const scopeEl = pill.closest(".product-detail-btn-box") || document;
-
-    const hidden = scopeEl.querySelector(`input[type="hidden"][name="${groupName}"]`);
-    if (hidden) hidden.value = pill.getAttribute("data-option-value") || "";
-
-    scopeEl.querySelectorAll(".cart-button").forEach(updatePriceDisplay);
-  }
-
-  // ----------------------------
-  // EVENTS
-  // ----------------------------
-  document.addEventListener("click", function (e) {
-    // open cart
-    if (e.target.closest("#cart-open-button")) {
-      openCart();
-      return;
-    }
-
-    // close cart
-    if (e.target.closest("#cart-close-button") || e.target.closest("#cart-overlay")) {
-      closeCart();
-      return;
-    }
-
-    // option pills
-    if (e.target.closest(".option-pill")) {
-      handleOptionClick(e);
-      return;
-    }
-
-    // add to cart
-    const btn = e.target.closest(".cart-button");
-    if (btn) {
-      addToCart(btn);
-      return;
-    }
-
-    // cart item controls
+  // Cart quantity / remove
+  document.addEventListener("click", (e) => {
     const itemEl = e.target.closest(".cart-item");
-    const actionBtn = e.target.closest("[data-action]");
-    if (itemEl && actionBtn) {
-      const index = itemEl.getAttribute("data-index");
-      const action = actionBtn.getAttribute("data-action");
-      mutateItem(index, action);
+    if (!itemEl) return;
+
+    const idx = Number(itemEl.getAttribute("data-index"));
+    const cart = loadCart();
+    if (!Number.isFinite(idx) || !cart[idx]) return;
+
+    if (e.target.closest(".cart-remove")) {
+      cart.splice(idx, 1);
+      saveCart(cart);
+      renderCart();
+      if (cart.length === 0) closeCart();
       return;
     }
 
-    // clear cart
-    if (e.target.closest("#cart-clear")) {
-      setCart([]);
-      updateCartCountUI();
+    if (e.target.closest(".qty-plus")) {
+      cart[idx].qty += 1;
+      saveCart(cart);
       renderCart();
       return;
     }
 
-    // checkout (placeholder)
-    if (e.target.closest("#cart-checkout")) {
-      alert("Checkout not wired yet. Tell me where you want checkout to go (WhatsApp, Stripe, or a checkout page).");
+    if (e.target.closest(".qty-minus")) {
+      cart[idx].qty = Math.max(1, cart[idx].qty - 1);
+      saveCart(cart);
+      renderCart();
       return;
     }
   });
 
-  document.addEventListener("keydown", function (e) {
-    if (e.key === "Escape") closeCart();
-  });
-
-  document.addEventListener("DOMContentLoaded", function () {
-    updateCartCountUI();
-    document.querySelectorAll(".cart-button").forEach(updatePriceDisplay);
-  });
-
-  window.addEventListener("storage", function (e) {
-    if (e.key === CART_KEY) {
-      updateCartCountUI();
-      renderCart();
-    }
-  });
-
+  // Initial render (DO NOT OPEN)
+  renderCart();
 })();
