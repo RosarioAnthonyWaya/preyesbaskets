@@ -7987,3 +7987,56 @@ body.cart-open {
   overflow: hidden;
 }
 
+/* ===== CART (closed by default, opens with .is-open) ===== */
+
+.cart-overlay{
+  position: fixed !important;
+  inset: 0 !important;
+  background: rgba(0,0,0,.45) !important;
+  z-index: 9998 !important;
+}
+
+.cart-overlay[hidden]{
+  display: none !important;
+}
+
+.cart-drawer{
+  position: fixed !important;
+  top: 0 !important;
+  right: 0 !important;
+  height: 100vh !important;
+  width: min(420px, 92vw) !important;
+
+  background: #fff !important;
+  z-index: 9999 !important;
+
+  transform: translateX(110%) !important; /* CLOSED STATE */
+  transition: transform .25s ease !important;
+
+  display: flex !important;
+  flex-direction: column !important;
+
+  box-shadow: 0 12px 40px rgba(0,0,0,.22) !important;
+}
+
+.cart-drawer.is-open{
+  transform: translateX(0) !important; /* OPEN STATE */
+}
+
+html.cart-lock,
+body.cart-lock{
+  overflow: hidden !important;
+}
+
+/* optional: make the close button feel clickable */
+#cart-close-button{
+  cursor: pointer;
+  font-size: 26px;
+  line-height: 1;
+  background: transparent;
+  border: 0;
+}
+
+
+
+
