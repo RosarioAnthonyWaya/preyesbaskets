@@ -81,35 +81,45 @@ This box is perfect when you want to say “I thought of you” in a way that fe
 A solid Valentine’s choice for her — easy, classy, and appreciated.</p>
 
 <br>
-<div class="product-detail-btn-box" id="product-rose-box-1">
+
+<div class="product-detail-btn-box" id="product-roses-mobile">
 
   <div class="product-detail-option-group">
-    <div class="field-label">Rose colour</div>
-    <div class="option-grid" data-option-group="color">
-      <button type="button" class="option-pill" data-option-value="Red">Red</button>
-      <button type="button" class="option-pill" data-option-value="Pink">Pink</button>
-      <button type="button" class="option-pill" data-option-value="White">White</button>
-      <button type="button" class="option-pill" data-option-value="Mixed">Mixed</button>
+    <div class="field-label">Choose roses</div>
+
+    <div class="option-grid" data-option-group="package">
+      <button type="button" class="option-pill" data-option-value="9 Roses">£XX – 9 Roses</button>
+      <button type="button" class="option-pill" data-option-value="16 Roses">£XX – 16 Roses</button>
+      <button type="button" class="option-pill" data-option-value="24 Roses">£XX – 24 Roses</button>
+      <button type="button" class="option-pill" data-option-value="50 Roses">£XX – 50 Roses</button>
     </div>
   </div>
 
   <div class="product-detail-option-group">
-    <div class="field-label">Quantity</div>
-    <div class="option-grid" data-option-group="qty">
-      <button type="button" class="option-pill" data-option-value="9 Roses">9 Roses</button>
-      <button type="button" class="option-pill" data-option-value="16 Roses">16 Roses</button>
-      <button type="button" class="option-pill" data-option-value="25 Roses">25 Roses</button>
+    <div class="field-label">Add-on (optional)</div>
+
+    <!-- data-multi="true" makes this toggle instead of single-select -->
+    <div class="option-grid" data-option-group="addon" data-multi="true">
+      <button type="button" class="option-pill" data-option-value="Chocolates">+£10 – Chocolates</button>
     </div>
   </div>
 
-  <input type="hidden" class="selected-options" value="">
+  <div class="price-row">
+    <span>Total:</span>
+    <strong id="roses-price-mobile">£0.00</strong>
+  </div>
 
   <button
+    type="button"
     class="cart-button"
-    data-product-id="rose-in-a-box"
-    data-name="Rose in a Box"
-    data-price="0"
-    data-options-source="#product-rose-box-1"
+    data-product-id="box-of-roses"
+    data-name="Box of Roses"
+    data-options-scope="#product-roses-mobile"
+    data-price-mode="lookup"
+    data-price-option="package"
+    data-price-map='{"9 Roses":0,"16 Roses":0,"24 Roses":0,"50 Roses":0}'
+    data-addon-map='{"Chocolates":10}'
+    data-price-display="#roses-price-mobile"
   >
     Add to Cart
   </button>
@@ -117,10 +127,9 @@ A solid Valentine’s choice for her — easy, classy, and appreciated.</p>
 </div>
 
 
+                </div>
 
-                      
-                    </div>
-
+                
                     <div class="product-detail-image-column show-desktop-tablet">
                        <div data-w-id="ad94eddc-83c5-8cfd-991f-c0bd6380befe" style="opacity: 1; transform: translate3d(0px, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg); transform-style: preserve-3d;" class="deal-right-box">
                         <div data-current="Tab 1" data-easing="ease" data-duration-in="300" data-duration-out="100" class="deal-tabs w-tabs">
@@ -166,35 +175,43 @@ A solid Valentine’s choice for her — easy, classy, and appreciated.</p>
 
 
 <br>
-<div class="product-detail-btn-box" id="product-rose-box-1">
+<div class="product-detail-btn-box" id="product-roses-desktop">
 
   <div class="product-detail-option-group">
-    <div class="field-label">Rose colour</div>
-    <div class="option-grid" data-option-group="color">
-      <button type="button" class="option-pill" data-option-value="Red">Red</button>
-      <button type="button" class="option-pill" data-option-value="Pink">Pink</button>
-      <button type="button" class="option-pill" data-option-value="White">White</button>
-      <button type="button" class="option-pill" data-option-value="Mixed">Mixed</button>
+    <div class="field-label">Choose roses</div>
+
+    <div class="option-grid" data-option-group="package">
+      <button type="button" class="option-pill" data-option-value="9 Roses">£45 – 9 Roses</button>
+      <button type="button" class="option-pill" data-option-value="16 Roses">£75 – 16 Roses</button>
+      <button type="button" class="option-pill" data-option-value="24 Roses">£90 – 24 Roses</button>
+      <button type="button" class="option-pill" data-option-value="50 Roses">£200 – 50 Roses</button>
     </div>
   </div>
 
   <div class="product-detail-option-group">
-    <div class="field-label">Quantity</div>
-    <div class="option-grid" data-option-group="qty">
-      <button type="button" class="option-pill" data-option-value="9 Roses">9 Roses</button>
-      <button type="button" class="option-pill" data-option-value="16 Roses">16 Roses</button>
-      <button type="button" class="option-pill" data-option-value="25 Roses">25 Roses</button>
+    <div class="field-label">Add-on (optional)</div>
+
+    <div class="option-grid" data-option-group="addon" data-multi="true">
+      <button type="button" class="option-pill" data-option-value="Chocolates">+£10 – Chocolates</button>
     </div>
   </div>
 
-  <input type="hidden" class="selected-options" value="">
+  <div class="price-row">
+    <span>Total:</span>
+    <strong id="roses-price-desktop">£0.00</strong>
+  </div>
 
   <button
+    type="button"
     class="cart-button"
-    data-product-id="rose-in-a-box"
-    data-name="Rose in a Box"
-    data-price="0"
-    data-options-source="#product-rose-box-1"
+    data-product-id="box-of-roses"
+    data-name="Box of Roses"
+    data-options-scope="#product-roses-desktop"
+    data-price-mode="lookup"
+    data-price-option="package"
+    data-price-map='{"9 Roses":45,"16 Roses":75,"24 Roses":90,"50 Roses":200}'
+    data-addon-map='{"Chocolates":10}'
+    data-price-display="#roses-price-desktop"
   >
     Add to Cart
   </button>
@@ -203,9 +220,9 @@ A solid Valentine’s choice for her — easy, classy, and appreciated.</p>
 
 
 
+
                       
                     </div>
-                </div>
             </div>
         </section>
 
@@ -231,7 +248,7 @@ A solid Valentine’s choice for her — easy, classy, and appreciated.</p>
                                     <h3 class="featured-title">Teddy bears</h3>
                                     <p class="featured-text">
                                             </p>
-                                    <a href="/teddy-bears" data-w-id="0559b378-fa75-e2d0-595e-3a29076f8709" class="theme-button dark w-inline-block">
+                                    <a href="/money-bouquet" data-w-id="0559b378-fa75-e2d0-595e-3a29076f8709" class="theme-button dark w-inline-block">
                                         <div class="theme-btn-bg light" style="width: 40px;"></div>
                                         <div class="theme-btn-icon-box"><img loading="lazy" src="https://cdn.prod.website-files.com/68d40147877fa1b7a07fd6b5/68d5955edd4f4797399a9f8d_svgviewer-output%20(4).svg" alt="" class="theme-btn-icon" style="transform: translate3d(0%, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg); transform-style: preserve-3d;"><img loading="lazy" src="https://cdn.prod.website-files.com/68d40147877fa1b7a07fd6b5/68d5955edd4f4797399a9f8d_svgviewer-output%20(4).svg" alt="" class="theme-btn-hover-icon" style="transform: translate3d(-150%, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg); transform-style: preserve-3d;"></div>
                                         <div class="theme-btn-text-box">
@@ -250,7 +267,7 @@ A solid Valentine’s choice for her — easy, classy, and appreciated.</p>
                                     <img src="https://ng.jumia.is/unsafe/fit-in/500x500/filters:fill(white)/product/22/8707172/1.jpg?4469" loading="lazy" alt="" class="featured-image3" aria-hidden="true">
                                 </div>
                                 <div class="featured-content-box" aria-hidden="true">
-                                    <h3 class="featured-title" aria-hidden="true">Men's Jackets </h3>
+                                    <h3 class="featured-title" aria-hidden="true">Men's Jackets</h3>
                                     <p class="featured-text" aria-hidden="true">
                                          </p>
                                     <a href="/products/jackets" data-w-id="0559b378-fa75-e2d0-595e-3a29076f8709" class="theme-button dark w-inline-block" tabindex="-1" aria-hidden="true">
@@ -380,4 +397,5 @@ A solid Valentine’s choice for her — easy, classy, and appreciated.</p>
             </div>
         </section>
         
+
 
