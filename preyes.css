@@ -8037,6 +8037,66 @@ body.cart-lock{
   border: 0;
 }
 
+/* =========================================================
+   CART DRAWER FIX - Add this at the END of your CSS file
+   This overrides all conflicting cart drawer styles
+   ========================================================= */
 
+/* Hide cart overlay by default */
+.cart-overlay {
+  display: none !important;
+  position: fixed !important;
+  inset: 0 !important;
+  background: rgba(0, 0, 0, 0.45) !important;
+  z-index: 9998 !important;
+}
+
+/* Show overlay when cart is open */
+.cart-overlay:not([hidden]) {
+  display: block !important;
+}
+
+/* Cart drawer - HIDDEN by default */
+.cart-drawer {
+  position: fixed !important;
+  top: 0 !important;
+  right: 0 !important;
+  height: 100vh !important;
+  width: min(420px, 92vw) !important;
+  background: #fff !important;
+  z-index: 9999 !important;
+  
+  /* KEY FIX: Hidden by default */
+  display: none !important;
+  transform: translateX(110%) !important;
+  transition: transform 0.25s ease !important;
+  
+  flex-direction: column !important;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.22) !important;
+  overflow: auto !important;
+}
+
+/* Cart drawer - VISIBLE and interactive when open */
+.cart-drawer.is-open {
+  display: flex !important;
+  transform: translateX(0) !important;
+  pointer-events: auto !important;
+}
+
+/* Lock body scroll when cart is open */
+html.cart-lock,
+body.cart-lock,
+body.cart-open {
+  overflow: hidden !important;
+}
+
+/* Ensure close button is clickable */
+#cart-close-button {
+  cursor: pointer !important;
+  font-size: 26px !important;
+  line-height: 1 !important;
+  background: transparent !important;
+  border: 0 !important;
+}
 
 
