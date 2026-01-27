@@ -7955,3 +7955,35 @@ body.cart-open{
   margin-bottom: 12px;
 }
 
+/* Cart overlay */
+.cart-overlay[hidden] { display: none !important; }
+.cart-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.45);
+  z-index: 9998;
+}
+
+/* Cart drawer */
+.cart-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: min(420px, 92vw);
+  height: 100vh;
+  background: #fff;
+  z-index: 9999;
+  transform: translateX(110%); /* hidden by default */
+  transition: transform .25s ease;
+  pointer-events: none; /* not clickable when closed */
+}
+
+.cart-drawer.is-open {
+  transform: translateX(0);
+  pointer-events: auto;
+}
+
+body.cart-open {
+  overflow: hidden;
+}
+
