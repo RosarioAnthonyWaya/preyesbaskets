@@ -1,252 +1,184 @@
-(function () {
-  const CART_KEY = "preyes_cart_v1";
+/* assets/js/cart.js */
+(() => {
+  const STORAGE_KEY = "pb_cart_v1";
 
-  const qs = (s, root = document) => root.querySelector(s);
-  const qsa = (s, root = document) => Array.from(root.querySelectorAll(s));
+  const drawer = document.getElementById("cart-drawer");
+  const overlay = document.getElementById("cart-overlay");
+  const itemsEl = document.getElementById("cart-items");
+  const totalEl = document.getElementById("cart-total");
 
-  const drawer = qs("#cart-drawer");
-  const overlay = qs("#cart-overlay");
-  const openBtn = qs("#cart-open-button");
-  const closeBtn = qs("#cart-close-button");
-  const navCount = qs("#nav-cart-count");
+  const openBtn = document.getElementById("cart-open-button");
+  const closeBtn = document.getElementById("cart-close-button");
+  const countEl = document.getElementById("nav-cart-count");
 
-  const itemsWrap = qs("#cart-items");
-  const totalEl = qs("#cart-total");
+  if (!drawer || !overlay || !itemsEl || !totalEl) return;
 
-  if (!drawer || !overlay || !openBtn || !closeBtn || !itemsWrap || !totalEl) return;
-
-  // ---- HARD RESET ON LOAD (prevents "starts open" / weird state) ----
-  overlay.hidden = true;
-  drawer.classList.remove("is-open");
-  drawer.setAttribute("aria-hidden", "true");
-  document.documentElement.classList.remove("cart-lock");
-  document.body.classList.remove("cart-lock");
-
-  // ---- storage helpers ----
   function readCart() {
     try {
-      const raw = localStorage.getItem(CART_KEY);
-      return raw ? JSON.parse(raw) : [];
+      return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
     } catch {
       return [];
     }
   }
 
   function writeCart(cart) {
-    localStorage.setItem(CART_KEY, JSON.stringify(cart));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(cart));
   }
 
   function money(n) {
-    const x = Number(n) || 0;
+    const x = Number(n || 0);
     return `£${x.toFixed(2)}`;
   }
 
-  // ---- UI open/close ----
-  function openCart() {
-    overlay.hidden = false;
-    drawer.classList.add("is-open");
-    drawer.setAttribute("aria-hidden", "false");
-    document.documentElement.classList.add("cart-lock");
-    document.body.classList.add("cart-lock");
-  }
-
-  function closeCart() {
-    overlay.hidden = true;
-    drawer.classList.remove("is-open");
-    drawer.setAttribute("aria-hidden", "true");
-    document.documentElement.classList.remove("cart-lock");
-    document.body.classList.remove("cart-lock");
-  }
-
-  // ---- render ----
-  function calc(cart) {
-    let qty = 0;
-    let total = 0;
-    cart.forEach(i => {
-      const q = Number(i.qty) || 0;
-      const p = Number(i.price) || 0;
-      qty += q;
-      total += q * p;
-    });
-    return { qty, total };
+  function calcTotal(cart) {
+    return cart.reduce((sum, it) => sum + (Number(it.price) * Number(it.qty || 1)), 0);
   }
 
   function updateBadge(cart) {
-    const { qty } = calc(cart);
-    if (navCount) navCount.textContent = String(qty);
+    if (!countEl) return;
+    const count = cart.reduce((sum, it) => sum + Number(it.qty || 1), 0);
+    countEl.textContent = String(count);
   }
 
-  function render() {
+  function renderCart() {
     const cart = readCart();
-    itemsWrap.innerHTML = "";
 
     if (!cart.length) {
-      itemsWrap.innerHTML = `<p style="margin:0; padding: 16px;">Your cart is empty.</p>`;
+      itemsEl.innerHTML = `<p style="margin:0;">Your cart is empty.</p>`;
       totalEl.textContent = money(0);
       updateBadge(cart);
       return;
     }
 
-    cart.forEach((item, idx) => {
-      const line = (Number(item.price) || 0) * (Number(item.qty) || 0);
-
-      const opts = item.options
-        ? Object.entries(item.options).map(([k, v]) => `<div style="font-size:12px; opacity:.75;">${k}: ${v}</div>`).join("")
-        : "";
-
-      const row = document.createElement("div");
-      row.className = "cart-row";
-      row.style.cssText = "padding:16px; border-bottom:1px solid #eee; display:flex; gap:12px; justify-content:space-between;";
-
-      row.innerHTML = `
-        <div style="flex:1;">
-          <div style="font-weight:600;">${item.name || "Item"}</div>
-          ${opts}
-          <div style="margin-top:6px; opacity:.8;">${money(item.price)} × ${item.qty}</div>
-        </div>
-
-        <div style="text-align:right; min-width:120px;">
-          <div style="font-weight:700;">${money(line)}</div>
-
-          <div style="margin-top:8px; display:flex; gap:8px; justify-content:flex-end; align-items:center;">
-            <button type="button" data-action="dec" data-idx="${idx}">−</button>
-            <span>${item.qty}</span>
-            <button type="button" data-action="inc" data-idx="${idx}">+</button>
+    itemsEl.innerHTML = cart.map((it, idx) => {
+      const lineTotal = Number(it.price) * Number(it.qty || 1);
+      const optText = it.options ? Object.entries(it.options).map(([k,v]) => `${k}: ${v}`).join(" • ") : "";
+      return `
+        <div class="cart-item" data-index="${idx}" style="display:flex; gap:12px; padding:12px 0; border-bottom:1px solid #eee;">
+          <div style="flex:1;">
+            <div style="font-weight:600;">${it.name || "Item"}</div>
+            ${optText ? `<div style="font-size:12px; opacity:.75; margin-top:4px;">${optText}</div>` : ""}
+            <div style="margin-top:8px; display:flex; gap:10px; align-items:center;">
+              <button type="button" class="cart-qty-btn" data-action="dec" aria-label="Decrease quantity">−</button>
+              <span style="min-width:22px; text-align:center;">${Number(it.qty || 1)}</span>
+              <button type="button" class="cart-qty-btn" data-action="inc" aria-label="Increase quantity">+</button>
+              <span style="margin-left:auto; font-weight:600;">${money(lineTotal)}</span>
+            </div>
           </div>
-
-          <button type="button" data-action="remove" data-idx="${idx}" style="margin-top:8px;">Remove</button>
+          <button type="button" class="cart-remove-btn" data-action="remove" aria-label="Remove item" style="border:none; background:transparent; font-size:18px; cursor:pointer;">×</button>
         </div>
       `;
+    }).join("");
 
-      itemsWrap.appendChild(row);
-    });
-
-    const { total } = calc(cart);
-    totalEl.textContent = money(total);
+    totalEl.textContent = money(calcTotal(cart));
     updateBadge(cart);
   }
 
-  // ---- cart mutations ----
-  function upsertItem(newItem) {
-    const cart = readCart();
-
-    // merge rule: same product id + same options => increase qty
-    const key = (i) => JSON.stringify({ id: i.id, options: i.options || {} });
-    const existingIndex = cart.findIndex(i => key(i) === key(newItem));
-
-    if (existingIndex >= 0) {
-      cart[existingIndex].qty += newItem.qty;
-    } else {
-      cart.push(newItem);
-    }
-
-    writeCart(cart);
-    render();
+  function openCart() {
+    drawer.classList.add("is-open");
+    drawer.setAttribute("aria-hidden", "false");
+    overlay.hidden = false;
+    document.body.classList.add("cart-open");
   }
 
-  function changeQty(idx, delta) {
-    const cart = readCart();
-    if (!cart[idx]) return;
-
-    cart[idx].qty = (Number(cart[idx].qty) || 0) + delta;
-    if (cart[idx].qty <= 0) cart.splice(idx, 1);
-
-    writeCart(cart);
-    render();
+  function closeCart() {
+    drawer.classList.remove("is-open");
+    drawer.setAttribute("aria-hidden", "true");
+    overlay.hidden = true;
+    document.body.classList.remove("cart-open");
   }
 
-  function removeIdx(idx) {
-    const cart = readCart();
-    cart.splice(idx, 1);
-    writeCart(cart);
-    render();
-  }
-
-  // ---- option helpers (your "pick a package" logic) ----
-  function getSelectedOption(scopeEl, optionName) {
-    // expects: <input type="hidden" name="package" ... value="Classic Romance">
-    const hidden = qs(`input[name="${optionName}"]`, scopeEl);
-    if (hidden && hidden.value) return hidden.value.trim();
-
-    // fallback: selected pill
-    const pill = qs(`.option-grid[data-option-group="${optionName}"] .option-pill.is-selected`, scopeEl);
-    return pill ? pill.getAttribute("data-option-value") : "";
-  }
-
-  function getPriceFromMap(btn, selectedOptionValue) {
-    const mapRaw = btn.getAttribute("data-price-map") || "{}";
-    let map = {};
-    try { map = JSON.parse(mapRaw); } catch { map = {}; }
-    return Number(map[selectedOptionValue]) || 0;
-  }
-
-  function addToCartFromButton(btn) {
-    const name = btn.getAttribute("data-name") || "Item";
-    const id = btn.getAttribute("data-product-id") || name.toLowerCase().replace(/\s+/g, "-");
-
-    const scopeSel = btn.getAttribute("data-options-scope");
-    const scopeEl = scopeSel ? qs(scopeSel) : document;
-
-    const priceMode = btn.getAttribute("data-price-mode") || "fixed";
-
-    let options = {};
-    let price = 0;
-
-    if (priceMode === "lookup") {
-      const optionKey = btn.getAttribute("data-price-option") || "package";
-      const selected = getSelectedOption(scopeEl, optionKey);
-
-      if (!selected) {
-        alert("Please pick a package first.");
-        return;
-      }
-
-      options[optionKey] = selected;
-      price = getPriceFromMap(btn, selected);
-
-      const displaySel = btn.getAttribute("data-price-display");
-      if (displaySel) {
-        const displayEl = qs(displaySel);
-        if (displayEl) displayEl.textContent = money(price);
-      }
-    } else {
-      price = Number(btn.getAttribute("data-price") || 0);
-    }
-
-    upsertItem({ id, name, price, qty: 1, options });
+  // ----- Controls: open/close -----
+  if (openBtn) openBtn.addEventListener("click", () => {
+    renderCart();
     openCart();
-  }
+  });
 
-  // ---- events ----
-  openBtn.addEventListener("click", openCart);
-  closeBtn.addEventListener("click", closeCart);
+  if (closeBtn) closeBtn.addEventListener("click", closeCart);
+
   overlay.addEventListener("click", closeCart);
 
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") closeCart();
   });
 
-  // add-to-cart buttons
-  document.addEventListener("click", (e) => {
-    const btn = e.target.closest(".cart-button");
-    if (!btn) return;
-    addToCartFromButton(btn);
-  });
+  // ----- Item controls inside cart -----
+  itemsEl.addEventListener("click", (e) => {
+    const row = e.target.closest(".cart-item");
+    if (!row) return;
 
-  // qty/remove inside cart
-  itemsWrap.addEventListener("click", (e) => {
-    const actionBtn = e.target.closest("button[data-action]");
+    const index = Number(row.getAttribute("data-index"));
+    const cart = readCart();
+    const item = cart[index];
+    if (!item) return;
+
+    const actionBtn = e.target.closest("[data-action]");
     if (!actionBtn) return;
 
     const action = actionBtn.getAttribute("data-action");
-    const idx = Number(actionBtn.getAttribute("data-idx"));
-    if (Number.isNaN(idx)) return;
 
-    if (action === "inc") changeQty(idx, +1);
-    if (action === "dec") changeQty(idx, -1);
-    if (action === "remove") removeIdx(idx);
+    if (action === "remove") {
+      cart.splice(index, 1);
+      writeCart(cart);
+      renderCart();
+      return;
+    }
+
+    if (action === "inc") item.qty = Number(item.qty || 1) + 1;
+    if (action === "dec") item.qty = Math.max(1, Number(item.qty || 1) - 1);
+
+    cart[index] = item;
+    writeCart(cart);
+    renderCart();
   });
 
-  // initial paint
-  render();
+  // ----- Add-to-cart buttons on product pages -----
+  document.addEventListener("click", (e) => {
+    const btn = e.target.closest(".cart-button");
+    if (!btn) return;
+
+    const scopeSel = btn.getAttribute("data-options-scope");
+    const scope = scopeSel ? document.querySelector(scopeSel) : document;
+
+    // Required option: "package"
+    const pkgInput = scope ? scope.querySelector('input[name="package"]') : null;
+    const pkgValue = pkgInput ? (pkgInput.value || "").trim() : "";
+
+    if (!pkgValue) {
+      alert("Please pick a package first.");
+      return;
+    }
+
+    // Price lookup map
+    const mapStr = btn.getAttribute("data-price-map") || "{}";
+    let priceMap = {};
+    try { priceMap = JSON.parse(mapStr); } catch {}
+
+    const price = Number(priceMap[pkgValue] || 0);
+    if (!price) {
+      alert("Invalid package price. Please try again.");
+      return;
+    }
+
+    const name = btn.getAttribute("data-name") || "Item";
+
+    const cart = readCart();
+    cart.push({
+      name,
+      price,
+      qty: 1,
+      options: { package: pkgValue }
+    });
+
+    writeCart(cart);
+    renderCart();
+    updateBadge(cart);
+
+    // Don’t auto-open. Just confirm.
+    // If you want a subtle UI feedback, keep it as alert or remove it.
+    // alert("Added to cart");
+  });
+
+  // Initial badge render only (NO auto-open)
+  renderCart();
 })();
