@@ -23,76 +23,28 @@
   <!-- CART DRAWER (ONLY ONE — CORRECT VERSION) -->
 
 
-   <!-- =========================
-CART DRAWER (site-wide)
-Place before </body>
-========================= -->
+<!-- CART OVERLAY -->
 <div id="cart-overlay" class="cart-overlay" hidden></div>
 
+<!-- CART DRAWER -->
 <aside id="cart-drawer" class="cart-drawer" aria-hidden="true">
   <div class="cart-drawer-header">
-    <h3 class="cart-drawer-title">Your cart</h3>
-    <button type="button" id="cart-close-button" class="cart-close" aria-label="Close cart">×</button>
+    <h3>Your cart</h3>
+    <button type="button" id="cart-close-button" aria-label="Close cart">×</button>
   </div>
 
-  <div id="cart-items" class="cart-items"></div>
+  <div id="cart-items"></div>
 
-  <div class="cart-footer">
+  <div class="cart-drawer-footer">
     <div class="cart-total-row">
       <span>Total</span>
       <strong id="cart-total">£0.00</strong>
     </div>
 
-    <button type="button" id="cart-checkout" class="cart-checkout-btn">
-      Checkout
-    </button>
-
-    <button type="button" id="cart-clear" class="cart-clear-btn">
-      Clear cart
-    </button>
+    <a href="/checkout/" class="w-button">Checkout</a>
   </div>
 </aside>
 
-<style>
-  .cart-overlay{
-    position:fixed; inset:0; background:rgba(0,0,0,.45);
-    z-index:9998;
-  }
-  .cart-drawer{
-    position:fixed; top:0; right:0; height:100vh; width:min(420px, 92vw);
-    background:#fff; z-index:9999;
-    transform:translateX(110%);
-    transition:transform .25s ease;
-    display:flex; flex-direction:column;
-    box-shadow:-12px 0 30px rgba(0,0,0,.18);
-  }
-  .cart-drawer.is-open{ transform:translateX(0); }
-  .cart-drawer-header{
-    display:flex; align-items:center; justify-content:space-between;
-    padding:16px 16px; border-bottom:1px solid #eee;
-  }
-  .cart-close{ font-size:28px; line-height:1; background:transparent; border:0; cursor:pointer; }
-  .cart-items{ padding:12px 16px; overflow:auto; flex:1; }
-  .cart-item{
-    display:flex; gap:10px; padding:12px 0; border-bottom:1px solid #f1f1f1;
-  }
-  .cart-item-main{ flex:1; }
-  .cart-item-title{ margin:0; font-weight:600; }
-  .cart-item-meta{ margin:4px 0 0; font-size:13px; color:#666; }
-  .cart-item-actions{ display:flex; gap:8px; align-items:center; margin-top:8px; }
-  .qty-btn{ width:34px; height:34px; border:1px solid #ddd; background:#fff; cursor:pointer; border-radius:8px; }
-  .remove-btn{ margin-left:auto; border:0; background:transparent; cursor:pointer; color:#a00; }
-  .cart-footer{
-    padding:14px 16px; border-top:1px solid #eee;
-  }
-  .cart-total-row{ display:flex; justify-content:space-between; padding-bottom:12px; }
-  .cart-checkout-btn, .cart-clear-btn{
-    width:100%; padding:12px 12px; border-radius:12px; cursor:pointer;
-    border:0;
-  }
-  .cart-checkout-btn{ background:#927AD9; color:#fff; margin-bottom:10px; }
-  .cart-clear-btn{ background:#f3f3f3; color:#222; }
-</style>
 
   <!-- Load cart system LAST -->
   <script src="{{ '/assets/js/cart.js' | relative_url }}"></script>
