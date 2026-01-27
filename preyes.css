@@ -7813,3 +7813,33 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 
+.cart-overlay[hidden] { display: none !important; }
+
+.cart-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.35);
+  z-index: 9998;
+}
+
+.cart-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 380px;
+  max-width: 92vw;
+  height: 100vh;
+  background: #fff;
+  z-index: 9999;
+  transform: translateX(105%);
+  transition: transform .25s ease;
+  overflow: auto;
+}
+
+.cart-drawer.is-open {
+  transform: translateX(0);
+}
+
+html.cart-lock, html.cart-lock body {
+  overflow: hidden;
+}
