@@ -6,32 +6,160 @@ description: "Review your cart and complete payment."
 
 <section class="section">
   <div class="container">
+    
+    <!-- Page Title -->
     <h1>Checkout</h1>
-
+    
+    <!-- Empty Cart Message -->
     <div id="cart-empty" style="display:none; margin-top: 10px;">
       Your cart is empty.
     </div>
 
-    <div id="cart-items" style="margin-top: 16px;"></div>
-
-    <div style="margin-top: 18px;">
-      <label for="deliveries-count">Number of deliveries</label>
-      <input id="deliveries-count" type="number" min="1" value="1" />
-      <p style="opacity:0.8; margin-top:6px;">Shipping is charged per delivery.</p>
+    <!-- ============================
+         STEP 1: CART ITEMS REVIEW
+         ============================ -->
+    <div class="checkout-section">
+      <h3 class="checkout-subtitle">Your items</h3>
+      <div id="cart-items" style="margin-top: 16px;"></div>
     </div>
 
-    <hr style="margin: 18px 0;" />
-
-    <div>
-      <div>Subtotal: <strong id="cart-subtotal">£0.00</strong></div>
-      <div>Shipping: <strong id="cart-shipping">£0.00</strong></div>
-      <div style="margin-top: 8px;">Total: <strong id="cart-total">£0.00</strong></div>
+    <!-- ============================
+         STEP 2: DELIVERY QUANTITY
+         ============================ -->
+    <div class="checkout-section" style="margin-top: 32px;">
+      <h3 class="checkout-subtitle">Delivery quantity</h3>
+      <div class="checkout-field">
+        <label class="field-label" for="deliveries-count">Number of deliveries</label>
+        <input 
+          id="deliveries-count" 
+          type="number" 
+          min="1" 
+          value="1" 
+          class="text-input"
+          style="max-width: 120px;"
+        />
+        <p class="field-hint" style="margin-top:6px;">
+          Shipping is charged per delivery. Increase this if you're sending to multiple addresses.
+        </p>
+      </div>
     </div>
 
-    <div style="margin-top: 18px;">
-      <button id="checkout-button" class="theme-button">Pay securely</button>
-      <p id="checkout-status" style="margin-top:10px;"></p>
+    <!-- ============================
+         STEP 3: DELIVERY DETAILS
+         ============================ -->
+    <div class="checkout-section" style="margin-top: 32px;">
+      <h3 class="checkout-subtitle">Delivery details</h3>
+      
+      <!-- Delivery Speed -->
+      <div class="checkout-field">
+        <div class="field-label">Delivery speed</div>
+        <div class="option-grid" data-option-group="deliverySpeed" data-required="true">
+          <button 
+            type="button" 
+            class="option-pill is-selected" 
+            data-option-value="standard" 
+            aria-pressed="true"
+          >
+            Standard (£11 per delivery)
+          </button>
+          <button 
+            type="button" 
+            class="option-pill" 
+            data-option-value="express" 
+            aria-pressed="false"
+          >
+            Express 1–2 business days (£15 per delivery)
+          </button>
+        </div>
+        <p class="field-hint">
+          Express delivery requires selecting a date 1–2 business days from today.
+        </p>
+      </div>
+
+      <!-- Delivery Date -->
+      <div class="checkout-field" style="margin-top: 20px;">
+        <label class="field-label" for="delivery-date">Preferred delivery date</label>
+        <input 
+          id="delivery-date" 
+          name="delivery-date" 
+          type="date" 
+          class="text-input" 
+          style="max-width: 200px;"
+        />
+        <p class="field-hint" id="delivery-date-hint"></p>
+      </div>
     </div>
+
+    <!-- ============================
+         STEP 4: DELIVERY ADDRESSES
+         ============================ -->
+    <div class="checkout-section" style="margin-top: 32px;">
+      <h3 class="checkout-subtitle">Delivery address</h3>
+      
+      <!-- Multi-address toggle -->
+      <div class="checkout-field">
+        <label class="checkbox-field">
+          <input type="checkbox" id="multi-address-toggle" />
+          <span>I want to send to more than one address</span>
+        </label>
+        <p class="field-hint" style="margin-top:6px;">
+          If you're sending to multiple addresses, check this box and fill in each delivery address below.
+        </p>
+      </div>
+
+      <!-- Single Address Note -->
+      <div id="single-address-note" style="margin-top: 12px;">
+        <p class="field-hint" style="background: #f5f5f5; padding: 12px; border-radius: 8px; margin: 0;">
+          ℹ️ <strong>Single delivery:</strong> You'll enter your shipping address on the next page (Stripe checkout).
+        </p>
+      </div>
+
+      <!-- Multi-address container (hidden unless enabled) -->
+      <div id="multi-address-wrap" style="display:none; margin-top: 16px;">
+        <div class="field-label" style="margin-bottom: 12px;">Delivery addresses</div>
+        <div id="multi-address-list"></div>
+        <p class="field-hint" style="margin-top: 12px;">
+          Enter one complete address per delivery. We'll charge shipping separately for each.
+        </p>
+      </div>
+    </div>
+
+    <!-- ============================
+         STEP 5: ORDER SUMMARY & PAYMENT
+         ============================ -->
+    <div class="checkout-section" style="margin-top: 32px; padding-top: 24px; border-top: 2px solid rgba(0,0,0,0.1);">
+      <h3 class="checkout-subtitle">Order summary</h3>
+      
+      <div style="margin-top: 16px;">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 15px;">
+          <span>Subtotal:</span>
+          <strong id="cart-subtotal">£0.00</strong>
+        </div>
+        <div style="display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 15px;">
+          <span>Shipping:</span>
+          <strong id="cart-shipping">£0.00</strong>
+        </div>
+        <hr style="margin: 12px 0; border: none; border-top: 1px solid rgba(0,0,0,0.1);" />
+        <div style="display: flex; justify-content: space-between; margin-bottom: 20px; font-size: 18px;">
+          <span><strong>Total:</strong></span>
+          <strong id="cart-total" style="color: #927AD9;">£0.00</strong>
+        </div>
+      </div>
+
+      <!-- Checkout Button -->
+      <button id="checkout-button" class="cart-button" style="width: 100%; padding: 16px; font-size: 16px;">
+        Pay Securely
+      </button>
+      
+      <!-- Status Message -->
+      <p id="checkout-status" style="margin-top:12px; text-align: center; color: #666;"></p>
+
+      <!-- Security Note -->
+      <p class="field-hint" style="text-align: center; margin-top: 12px;">
+        🔒 Secure checkout powered by Stripe. Your payment information is encrypted and safe.
+      </p>
+    </div>
+
   </div>
 </section>
 
