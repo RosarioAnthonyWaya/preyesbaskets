@@ -5484,8 +5484,8 @@ a {
 }
 
 .checkout-section {
-    padding-top: 150px;
-    padding-bottom: 150px;
+    padding-top: 70px;
+    padding-bottom: 70px;
     position: relative;
     overflow: hidden
 }
@@ -6524,8 +6524,8 @@ a {
     }
 
     .checkout-section {
-        padding-top: 120px;
-        padding-bottom: 120px
+        padding-top: 50px;
+        padding-bottom: 500px
     }
 
     .checkout-grid {
@@ -7268,8 +7268,8 @@ a {
     }
 
     .checkout-section {
-        padding-top: 100px;
-        padding-bottom: 100px
+        padding-top: 35px;
+        padding-bottom: 35px
     }
 
     .checkout-input {
@@ -8146,3 +8146,5 @@ body.cart-open {
   box-shadow: none;
   transform: none;
 }
+
+.checkout-button { width: 50%; padding: 16px; font-size: 16px; }
