@@ -30,7 +30,7 @@ permalink: /valentines/boxes/romantic-queen/
 </style>
 
 
-    <section class="product-detail">
+ <section class="product-detail">
             <div class="w-layout-blockcontainer container w-container">
                 <div class="w-layout-grid product-detail-griid">
 
@@ -145,40 +145,33 @@ Every item in this box reflects confidence, taste, and intention.
 <!--needs work-->  
 <div class="product-detail-btn-box" id="product-romantic-queen-mobile">
 
-  <!-- Teddy Upgrade (required selection so no confusion) -->
+  <!-- Package (Required) -->
   <div class="product-detail-option-group">
     <div class="field-label">Teddy size</div>
-    <div class="option-grid" data-option-group="teddy" data-required="true">
-      <button type="button" class="option-pill is-selected" data-option-value="Medium" aria-pressed="true">
-        Medium (included)
-      </button>
-      <button type="button" class="option-pill" data-option-value="Large" aria-pressed="false">
-        Large (+£25)
-      </button>
+    <div class="option-grid" data-option-group="package" data-required="true">
+      <button type="button" class="option-pill is-selected" data-option-value="Medium">Medium (included)</button>
+      <button type="button" class="option-pill" data-option-value="Large">Large teddy (+£25)</button>
     </div>
   </div>
 
-  <!-- Extra Add-on -->
+  <!-- Add-on (Optional) -->
   <div class="product-detail-option-group">
-    <div class="field-label">Add an extra?</div>
-    <div class="option-grid" data-option-group="extra" data-required="true">
-      <button type="button" class="option-pill is-selected" data-option-value="None" aria-pressed="true">
-        No extra
-      </button>
-      <button type="button" class="option-pill" data-option-value="Rose Bouquet" aria-pressed="false">
-        Rose bouquet (+£20)
-      </button>
+    <div class="field-label">Add something extra? (optional)</div>
+    <div class="option-grid" data-option-group="addon">
+      <button type="button" class="option-pill" data-option-value="Rose Bouquet">Rose bouquet (+£20)</button>
+      <button type="button" class="option-pill" data-option-value="Helium Balloons">Helium balloons (+£15)</button>
+      <button type="button" class="option-pill" data-option-value="Luxury Gift Wrap">Luxury gift wrap (+£8)</button>
     </div>
   </div>
 
-  <!-- Gift Message -->
+  <!-- Card message (cart.js reads this exact name) -->
   <div class="product-detail-option-group">
-    <div class="field-label">Gift message (optional)</div>
+    <div class="field-label">Handwritten love note (optional)</div>
     <textarea
       class="text-input"
+      name="card_message"
       rows="3"
       placeholder="Write your message here…"
-      data-option-group="message"
     ></textarea>
   </div>
 
@@ -195,18 +188,17 @@ Every item in this box reflects confidence, taste, and intention.
     data-product-id="romantic-queen"
     data-name="Romantic Queen Box"
     data-options-scope="#product-romantic-queen-mobile"
-    data-price-mode="basePlus"
-    data-base-price="85"
-    data-addon-map='{
-      "teddy": { "Large": 25 },
-      "extra": { "Rose Bouquet": 20 }
-    }'
+    data-price-mode="lookup"
+    data-price-option="package"
+    data-price-map='{"Medium":85,"Large":110}'
+    data-addon-map='{"Rose Bouquet":20,"Helium Balloons":15,"Luxury Gift Wrap":8}'
     data-price-display="#romantic-queen-price-mobile"
   >
     Add to Cart
   </button>
 
 </div>
+
 
 
 
@@ -325,40 +317,33 @@ Every item in this box reflects confidence, taste, and intention.
 <!--needs work-->  
 <div class="product-detail-btn-box" id="product-romantic-queen-desktop">
 
-  <!-- Teddy Upgrade -->
+  <!-- Package (Required) -->
   <div class="product-detail-option-group">
     <div class="field-label">Teddy size</div>
-    <div class="option-grid" data-option-group="teddy" data-required="true">
-      <button type="button" class="option-pill is-selected" data-option-value="Medium" aria-pressed="true">
-        Medium (included)
-      </button>
-      <button type="button" class="option-pill" data-option-value="Large" aria-pressed="false">
-        Large (+£25)
-      </button>
+    <div class="option-grid" data-option-group="package" data-required="true">
+      <button type="button" class="option-pill is-selected" data-option-value="Medium">Medium (included)</button>
+      <button type="button" class="option-pill" data-option-value="Large">Large teddy (+£25)</button>
     </div>
   </div>
 
-  <!-- Extra Add-on -->
+  <!-- Add-on (Optional) -->
   <div class="product-detail-option-group">
-    <div class="field-label">Add an extra?</div>
-    <div class="option-grid" data-option-group="extra" data-required="true">
-      <button type="button" class="option-pill is-selected" data-option-value="None" aria-pressed="true">
-        No extra
-      </button>
-      <button type="button" class="option-pill" data-option-value="Rose Bouquet" aria-pressed="false">
-        Rose bouquet (+£20)
-      </button>
+    <div class="field-label">Add something extra? (optional)</div>
+    <div class="option-grid" data-option-group="addon">
+      <button type="button" class="option-pill" data-option-value="Rose Bouquet">Rose bouquet (+£20)</button>
+      <button type="button" class="option-pill" data-option-value="Helium Balloons">Helium balloons (+£15)</button>
+      <button type="button" class="option-pill" data-option-value="Luxury Gift Wrap">Luxury gift wrap (+£8)</button>
     </div>
   </div>
 
-  <!-- Gift Message -->
+  <!-- Card message -->
   <div class="product-detail-option-group">
-    <div class="field-label">Gift message (optional)</div>
+    <div class="field-label">Handwritten love note (optional)</div>
     <textarea
       class="text-input"
+      name="card_message"
       rows="3"
       placeholder="Write your message here…"
-      data-option-group="message"
     ></textarea>
   </div>
 
@@ -375,18 +360,17 @@ Every item in this box reflects confidence, taste, and intention.
     data-product-id="romantic-queen"
     data-name="Romantic Queen Box"
     data-options-scope="#product-romantic-queen-desktop"
-    data-price-mode="basePlus"
-    data-base-price="85"
-    data-addon-map='{
-      "teddy": { "Large": 25 },
-      "extra": { "Rose Bouquet": 20 }
-    }'
+    data-price-mode="lookup"
+    data-price-option="package"
+    data-price-map='{"Medium":85,"Large":110}'
+    data-addon-map='{"Rose Bouquet":20,"Helium Balloons":15,"Luxury Gift Wrap":8}'
     data-price-display="#romantic-queen-price-desktop"
   >
     Add to Cart
   </button>
 
 </div>
+
 
 
 
@@ -399,6 +383,7 @@ Every item in this box reflects confidence, taste, and intention.
 
     
         </section>
+
 
 
 
